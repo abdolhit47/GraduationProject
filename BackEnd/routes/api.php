@@ -4,6 +4,7 @@ use App\Http\Controllers\CommissionsManagementController;
 use App\Http\Controllers\ExpenseManagementController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\RentalsManagementController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TaskManagementController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Http\Request;
@@ -42,4 +43,8 @@ Route::middleware(['auth:api'])->group( function () {
     Route::patch('/editExpense/{expenseId}', [ExpenseManagementController::class, 'editExpense']);//تعديل مصاريف
 
     Route::post('/salary', [ExpenseManagementController::class, 'addsalary']);//إضافة راتب
+
+    Route::get('/home', [ReportsController::class, 'index']);
+    Route::get('reports/{year}', [ReportsController::class, 'generateRevenueReport']);
+    Route::get('/reports/expenses', [ReportsController::class, 'viewExpenses']);
 });//Route::get('/tasks', [TaskManagementController::class, 'index']);
