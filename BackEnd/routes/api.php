@@ -21,6 +21,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/add-task', [TaskManagementController::class, 'addTask']);
     Route::PUT('/update-task-status/{taskId}', [TaskManagementController::class, 'updateTaskStatus']);
     Route::get('/completeTask', [TaskManagementController::class, 'completeTask']);
+    Route::get('/notCompleteTask', [TaskManagementController::class, 'notCompleteTask']);
     Route::post('/delete-task', [TaskManagementController::class, 'deleteTask']);
 
     Route::get('/viewCommission', [OrderManagementController::class, 'commissionOrders']);//عرض شحنات في واجهة إضافة طلب جديد
