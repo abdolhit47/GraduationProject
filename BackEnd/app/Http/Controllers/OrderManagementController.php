@@ -72,16 +72,12 @@ class OrderManagementController extends Controller {
         ], 201);
     }
 
-    public function viewOrders($id) {
-        if(auth()->user()->role == 'general_manager'){
-            if($id == 0){
-                $orders = Order::with('customer','commission')->get();
-            }else {
-                $orders = Order::with('customer', 'commission')->where('commission_id', $id)->get();
-            }
-        }else{
-            $orders = Order::with('customer','commission')->where('user_id',auth()->user()->id)->get();
-        }
+    public function viewOrders() {
+//        if(auth()->user()->role == 'general_manager'){
+            $orders = Order::with('customer','commission')->get();
+//        }else{
+//            $orders = Order::with('customer','commission')->where('user_id',auth()->user()->id)->get();
+//        }
         $orders = $orders->map(function($order){
             return [
                 'id' => $order->id,
@@ -100,6 +96,17 @@ class OrderManagementController extends Controller {
         return response()->json($orders,200);
     }
 
+    public function viewOrderTR(){
+
+    }
+
+    public function viewOrderUEA(){
+
+    }
+
+    public function viewOrderCH(){
+
+    }
     public function editOrder(Request $request, $orderId) {
         $order = Order::findOrFail($orderId);
 

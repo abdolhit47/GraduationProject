@@ -83,7 +83,7 @@ class CommissionsManagementController extends Controller {
         }
 
         $commission->update($validator->validated());
-        dd($commission);
+//        dd($commission);
         return response()->json([
             'status' => 'success',
             'message' => 'Commission updated successfully',

@@ -35,7 +35,7 @@ class RentalsManagementController extends Controller {
         $rental = Rental::create($validator->validated());
         return response()->json([
             'success' => true,
-            'rental' => $rental
+            'message' => 'Rental added successfully',
         ], 201);
     }
 
@@ -71,7 +71,7 @@ class RentalsManagementController extends Controller {
         $rental->update($request->all());
         return response()->json([
             'success' => true,
-            'rental' => $rental
+            'message' => 'Rental updated successfully',
         ]);
     }
 
