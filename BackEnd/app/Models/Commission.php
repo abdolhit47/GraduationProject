@@ -26,7 +26,7 @@ class Commission extends Model
     }
     public function commusers()
     {
-        return $this->hasMany(CommUser::class);
+        return $this->hasMany(CommUser::class, 'commission_id', 'id');
     }
     public function scopeByCountry($query, $country)
     {

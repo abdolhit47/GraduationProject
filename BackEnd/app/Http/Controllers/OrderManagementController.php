@@ -6,6 +6,7 @@ use App\Models\Commission;
 use App\Models\CommUser;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -55,7 +56,6 @@ class OrderManagementController extends Controller {
                 'message' => $validator->errors(),
             ], 400);
         }
-
         $validator->setData($validator->getData() + [
             'user_id' => auth()->user()->id,
             'order_number' => random_int(100000, 999999),
@@ -73,11 +73,22 @@ class OrderManagementController extends Controller {
     }
 
     public function viewOrders() {
-//        if(auth()->user()->role == 'general_manager'){
-            $orders = Order::with('customer','commission')->get();
-//        }else{
-//            $orders = Order::with('customer','commission')->where('user_id',auth()->user()->id)->get();
-//        }
+        $orders = Order::with('customer','commission')->get();
+        return response()->json($this->orderview($orders));
+    }
+    public function viewOrderTR(){
+        $orders = Order::with('customer','commission')->where('commission_id','2')->get();
+        return response()->json($this->orderview($orders));
+    }
+    public function viewOrderUEA(){
+        $orders = Order::with('customer','commission')->where('commission_id','3')->get();
+        return response()->json($this->orderview($orders));
+    }
+    public function viewOrderCH(){
+        $orders = Order::with('customer','commission')->where('commission_id','1')->get();
+        return response()->json($this->orderview($orders));
+    }
+     function orderview($orders){
         $orders = $orders->map(function($order){
             return [
                 'id' => $order->id,
@@ -93,34 +104,16 @@ class OrderManagementController extends Controller {
                 'status' => $order->status,
             ];
         });
-        return response()->json($orders,200);
+        return $orders;
     }
 
-    public function viewOrderTR(){
-
-    }
-
-    public function viewOrderUEA(){
-
-    }
-
-    public function viewOrderCH(){
-
-    }
     public function editOrder(Request $request, $orderId) {
         $order = Order::findOrFail($orderId);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable','string','max:255',
-            'type' => ['nullable', Rule::in(['apartment', 'office', 'building', 'warehouse', 'storage', 'other'])],//نوع المنتج
-            'location' => 'nullable','string','max:255',
-            'amount' => 'nullable','numeric','min:0',
+            'status' => ['nullable', 'string', Rule::in(['pending', 'purchased', 'shipping', 'delivering', 'delivered', 'cancelled'])],
         ], [
-            'name.string' => 'Name must be a string.',
-            'type.in' => 'Type must be a string.',
-            'location.string' => 'Location must be a string.',
-            'amount.numeric' => 'Amount must be a number.',
-            'amount.min' => 'Amount must be greater than 0.',
+            'status.in' => 'Status must be one of the following: pending, purchased, shipping, delivering, delivered, cancelled',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -128,61 +121,17 @@ class OrderManagementController extends Controller {
                 'message' => $validator->errors(),
             ], 400);
         }
-        // Handle status change
-        if ($request->filled('status') && $request->status !== $order->status) {
-            $order->status_history = array_merge($order->status_history ?? [], [[
-                'from' => $order->status,
-                'to' => $request->status,
-                'changed_by' => $request->user()->id,
-                'changed_at' => now(),
-                'reason' => $request->input('status_change_reason')
-            ]]);
-        }
 
-        // Update basic order information
-        $order->update($request->except('items'));
-
-        // Update items if provided
-        if ($request->has('items')) {
-            // Delete existing items
-            $order->items()->delete();
-
-            // Add new items
-            foreach ($request->items as $item) {
-                $order->items()->create($item);
-            }
-
-            // Recalculate totals
-            $subtotal = collect($request->items)->sum(function($item) {
-                return $item['quantity'] * $item['price'];
-            });
-
-            $taxAmount = $subtotal * ($order->tax_rate / 100);
-            $total = $subtotal + $taxAmount;
-
-            $order->update([
-                'subtotal' => $subtotal,
-                'tax_amount' => $taxAmount,
-                'total' => $total
-            ]);
-        }
-
+        $order->update($validator->validated());
         return response()->json([
             'success' => true,
-            'order' => $order
+            'message' => 'Order updated successfully',
         ]);
     }
 
     public function deleteOrder(Request $request, $orderId) {
         $order = Order::findOrFail($orderId);
 
-        // Prevent deleting delivered orders
-        if ($order->status === 'delivered') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot delete delivered orders.'
-            ], 403);
-        }
 
         // Delete order items first
         $order->items()->delete();

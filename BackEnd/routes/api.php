@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:api'])->group( function () {
+
+    Route::put('/changePassword', [UserManagementController::class, 'changePassword']);
+
+
     Route::get('/users', [UserManagementController::class, 'index']);
     Route::post('/user', [UserManagementController::class, 'store']);
     Route::get('/user/{id}', [UserManagementController::class, 'getUser']);
@@ -26,7 +30,7 @@ Route::middleware(['auth:api'])->group( function () {
 
     Route::get('/viewCommission', [OrderManagementController::class, 'commissionOrders']);//عرض شحنات في واجهة إضافة طلب جديد
     Route::post('/addOrder', [OrderManagementController::class, 'addOrder']);//اضافة طلب جديد
-    Route::get('/viewOrders', [OrderManagementController::class, 'viewOrders']);//عرض طلبات
+    Route::get('/viewOrders', [OrderManagementController::class, 'viewOrders']);//->middleware('permission:1,2');//عرض طلبات
     Route::get('/OrdersTR', [OrderManagementController::class, 'viewOrderTR']);//عرض طلبات تركيا
     Route::get('/OrdersUEA', [OrderManagementController::class, 'viewOrderUEA']);//عرض طلبات الإمارات
     Route::get('/OrdersCH', [OrderManagementController::class, 'viewOrderCH']);//عرض طلبات الصين
@@ -46,9 +50,10 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/addExpense', [ExpenseManagementController::class, 'addExpense']);//اضافة مصروف
     Route::patch('/editExpense/{expenseId}', [ExpenseManagementController::class, 'editExpense']);//تعديل مصاريف
 
-    Route::post('/salary', [ExpenseManagementController::class, 'addsalary']);//إضافة راتب
+    Route::post('/salary', [ExpenseManagementController::class, 'addsalary']);//تعديل راتب
 
-    Route::get('/home', [ReportsController::class, 'index']);
-    Route::get('reports/{year}', [ReportsController::class, 'generateRevenueReport']);
+    Route::get('/home/{year}', [ReportsController::class, 'index']);
+    Route::get('/reports/{year}', [ReportsController::class, 'generateRevenueReport']);
     Route::get('/reports/expenses', [ReportsController::class, 'viewExpenses']);
-});//Route::get('/tasks', [TaskManagementController::class, 'index']);
+    Route::get('/Earnings', [ReportsController::class, 'Earnings']);
+});

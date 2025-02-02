@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmloyeeSalary;
+use App\Models\Expense;
 use App\Models\Order;
 use App\Models\Commission;
+use App\Models\Rental;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ReportsController extends Controller {
 
-    public function index() {
+    public function index($year) {
         $ordersByMonth = Order::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->whereYear('created_at', date('Y'))
+            ->whereYear('created_at', $year)
             ->groupBy('month')
             ->pluck('count', 'month');
         $arabicMonths = [
@@ -118,40 +120,32 @@ class ReportsController extends Controller {
         $EmloyeeSalary = EmloyeeSalary::all();
     }
 
-    public function generateProfitReport(Request $request) {
-        $orderQuery = Order::query();
-        $commissionQuery = Commission::query();
-
-        if ($request->has('start_date')) {
-            $orderQuery->whereDate('created_at', '>=', $request->start_date);
-            $commissionQuery->whereDate('created_at', '>=', $request->start_date);
-        }
-        if ($request->has('end_date')) {
-            $orderQuery->whereDate('created_at', '<=', $request->end_date);
-            $commissionQuery->whereDate('created_at', '<=', $request->end_date);
-        }
-
-        $revenue = $orderQuery->sum('shipping_cost');
-        $expenses = $commissionQuery->sum('commission');
-        $profit = $revenue - $expenses;
-
-        return response()->json([
-            'revenue' => $revenue,
-            'expenses' => $expenses,
-            'profit' => $profit,
-            'profit_margin' => $revenue > 0 ? ($profit / $revenue) * 100 : 0
-        ]);
-    }
-
-    public function generateOrderStatusReport() {
-        $ordersByStatus = Order::select('status')
-            ->selectRaw('COUNT(*) as count')
-            ->selectRaw('SUM(shipping_cost) as total_revenue')
-            ->groupBy('status')
+    public function Earnings() {//EarningsReport
+        $year = $year ?? date('Y');
+        $month = $month ?? date('m');
+        //الايجار
+        $rentalMonthly = Rental::selectRaw('
+                SUM(amount) as total_rental
+            ')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
+//        dd($rentalMonthly);
+        // رواتب الموظفين
+        $salaryMonthly = EmloyeeSalary::selectRaw('
+                SUM(final_salary) as total_salary
+            ')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
             ->get();
 
-        return response()->json([
-            'orders_by_status' => $ordersByStatus
-        ]);
+        // مصروفات أخرى
+        $expenseMonthly = Expense::selectRaw('
+                SUM(amount) as total_expense
+            ')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get();
+        dd($expenseMonthly);
     }
 }

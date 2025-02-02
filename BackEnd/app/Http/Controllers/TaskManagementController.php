@@ -68,7 +68,6 @@ class TaskManagementController extends Controller {
         return response()->json('Task status added successfully', 200);
     }
 
-
     public function completeTask() {
         $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'task_status', 'employee_id')
             ->where('employee_id', Auth::user()->id)
@@ -76,7 +75,7 @@ class TaskManagementController extends Controller {
         return response()->json($tasks,200);
     }
 
-    public function notcompleteTask() {
+    public function notCompleteTask() {
         $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'employee_id')
             ->where('employee_id', Auth::user()->id)
             ->where('task_status', 'not_completed')->get();
@@ -84,9 +83,11 @@ class TaskManagementController extends Controller {
     }
     public function updateTaskStatus($taskId) {
         $task = Task::find($taskId);
-
         if (!$task) {
             return $this->errorResponse('Task not found', 404);
+        }
+        if($task->task_status == 'completed') {
+            return $this->errorResponse('Task already completed', 403);
         }
         $task->end_date = Carbon::now()->format('Y-m-d');
         $task->task_status = 'completed';

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OTPMail;
 use App\Models\CommUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -166,27 +171,161 @@ class UserManagementController extends Controller {
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['success' => false, 'message' => 'The provided credentials are incorrect.'], 401);
         }
-        if (!$token = JWTAuth::fromUser($user)) {
 
-            return response()->json([
-                "success" => false,
-                'message' => "خطأ اثناء انشاء token",
-            ], (500));
-
-        }
-
-        $tokenTTL = JWTAuth::factory()->getTTL();
-
-//        $otp = random_int(100000, 999999);
-//        $token_otp = Str::random(64);
-//        Cache::put("otp:{$token_otp}", ['email' => $request->email, 'otp' => $otp], now()->addMinutes(5));
-//        Mail::to($request->email)->send(new OTPMail($request->email, $otp,  $token_otp));
+        $otp = random_int(100000, 999999);
+        $token_otp = Str::random(64);
+        Cache::put("otp:{$token_otp}", ['email' => $user->email, 'otp' => $otp], now()->addMinutes(5));
+        Mail::to($request->email)->send(new OTPMail($request->email, $otp,  $token_otp));
         return response()->json([
-            "access" => $token,
-            'type' => $user->role,
-            'refresh' => '',
-            'token_expiration' => $tokenTTL,
+            "success" => true,
+            'message' => "رجاء تحقق من البريد الإلكتروني",
+            'token' => $token_otp,
         ]);
         //return response()->json(['success' => true, 'access_token' => $token, 'token_type' => 'Bearer', 'user' => $user]);
     }
+//change password with login
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'newPassword' => 'required|string|min:8',       // Validate the new password
+        ]);
+
+        $user = User::where('email',Auth::user()->email)->first();
+        // Update the user's password
+        $user->password = Hash::make($request->newPassword);
+        $user->save();
+        return response()->json(['message' => 'Password changed successfully']);
+    }
+
+    //verify otp after login
+    public function check(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|string',
+            'token' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([$validator->errors(),
+                'message' => "معلومات غير صالحة",
+            ], 422);
+        }
+        $cache = Cache::get("otp:{$request->token}");
+        if ($cache) {
+            if ($request->otp == $cache['otp']) {
+                $user = User::where('email', $cache['email'])->first();
+                //$user->update(['is_verified' => 1]);
+                Cache::forget("otp:{$request->token}");
+                $tokenTTL = JWTAuth::factory()->getTTL();
+                $token = JWTAuth::fromUser($user);
+                return response()->json([
+                    'message' => 'OTP verified',
+                    "FullName" => $user->FullName,
+                    'username' => $user->username,
+                    "access" => $token,
+                    'type' => $user->role,
+                    'refresh' => '',
+                    'token_expiration' => $tokenTTL,
+                ], 200);
+            }
+        } else {
+            return response()->json(['message' => 'Invalid OTP'], 401);
+        }
+        return response()->json(['message' => 'Invalid OTP'], 401);
+    }
+    //resend otp after login
+    public function resend(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => "معلومات غير صالحة",
+            ], 422);
+
+        }
+        $cache = Cache::get("otp:{$request->token}");
+        if ($cache) {
+            $otp = random_int(100000, 999999);
+            Cache::put("otp:{$request->token}", ['email' => $cache['email'], 'otp' => $otp], now()->addMinutes(5));
+            Mail::to($cache['email'])->send(new OTPMail($cache['email'], $otp, $request->token));
+            return response()->json(['message' => 'OTP sent'], 200);
+        } else {
+            return response()->json(['message' => 'Invalid token'], 401);
+        }
+    }
+
+
+    //check if email exists for forgot password and send otp
+    public function checkemail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $otp = random_int(100000, 999999);
+            $token_otp = Str::random(64);
+            Cache::put("otp:{$user->email}", ['email' => $user->email, 'otp' => $otp], now()->addMinutes(5));
+            Mail::to($user->email)->send(new OTPMail($user->email, $otp,  $token_otp));
+            return response()->json(['message' => 'تم إرسال رمز تحقق إلى بريدك الإلكتروني'], 200);
+        }
+        return response()->json(['message' => 'رجاء تأكد من البريد إلكتروني'], 401);
+
+    }
+    //verify otp after check email
+    public function verify(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|string',
+            'email' => 'required|email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([$validator->errors(),
+                'message' => "معلومات غير صالحة",
+            ], 422);
+        }
+
+        $cache = Cache::get("otp:{$request->email}");
+        if ($cache) {
+            if ($request->otp == $cache['otp']) {
+                Cache::forget("otp:{$request->token}");
+                $token_otp = Str::random(64);
+                Cache::put("otp:{$request->email}", [ 'otp' => $token_otp], now()->addMinutes(5));
+                return response()->json([
+                    'message' => 'OTP verified',
+                    'token' => $token_otp,
+                ], 200);
+            }
+        } else {
+            return response()->json(['message' => 'Invalid OTP'], 401);
+        }
+        return response()->json(['message' => 'Invalid OTP'], 401);
+    }
+
+    //forget password (update password without login but after check email and verify otp)
+    public function forgetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email', // Ensure user_id is provided and valid
+            'newPassword' => 'required|string|min:8',       // Validate the new password
+            'token' => 'required',
+        ]);
+        $user = User::where('email',$request->email)->first();
+        $cache = Cache::get("otp:{$request->email}");
+
+        if ($cache) {
+            if ($cache['otp'] == $request->token) {
+//                dd($cache['otp'] == $request->token);
+                $user->password = Hash::make($request->newPassword);
+                $user->save();
+                Cache::forget("otp:{$request->email}");
+                return response()->json(['message' => 'Password changed successfully']);
+            }
+            return response()->json(['message' => 'Invalid '], 401);
+        }
+        return response()->json(['message' => 'Invalid '], 401);
+    }
+
+
 }

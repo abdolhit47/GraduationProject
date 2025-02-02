@@ -16,7 +16,7 @@ class CommUser extends Model
 
     public function commission()
     {
-        return $this->belongsTo(Commission::class, 'commission_id');
+        return $this->belongsTo(Commission::class, 'commission_id', 'id');
     }
 
     public function user()

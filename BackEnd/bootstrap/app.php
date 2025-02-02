@@ -14,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: ['/*']);
-        $middleware->alias(['permission', AuthRoute::class]); // استخدام alias
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\AuthRoute::class // Key => Value
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
