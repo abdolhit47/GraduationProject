@@ -41,10 +41,6 @@ class NineInitialPageState extends State<NineInitialPage> {
       decoration: AppDecoration.semanticWhite,
       child: Column(
         children: [
-          SizedBox(
-            width: double.maxFinite,
-            child: _buildAppBar(context),
-          ),
           Expanded(
             child: Container(
               width: double.maxFinite,
@@ -82,7 +78,7 @@ class NineInitialPageState extends State<NineInitialPage> {
         imagePath: ImageConstant.imgFrameBlueGray30001,
         margin: EdgeInsets.only(left: 24.h),
         onTap: () {
-          onTapImagetwo(context);
+          // onTapImagetwo(context);
         },
       ),
       title: Column(
@@ -212,9 +208,4 @@ class NineInitialPageState extends State<NineInitialPage> {
   }
 
   /// Navigates to the confrmashnScreen when the action is triggered.
-  onTapImagetwo(BuildContext context) {
-    NavigatorService.pushNamed(
-      AppRoutes.confrmashnScreen,
-    );
-  }
 }
