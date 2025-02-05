@@ -21,6 +21,13 @@ class UserManagementController extends Controller {
         return response()->json($users);
     }
 
+    public function selectuser()  {
+        $users = User::select('id','role')->whereIn('role',['general_manager','employee1','employee2'])->get();
+        $users = $users->map(function ($user){
+            return ['value'=>$user->id,'lable'=>$user->role];
+        });
+        return response()->json($users);
+    }
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'first_name' => ['required', 'string', 'max:255'],
@@ -316,7 +323,6 @@ class UserManagementController extends Controller {
 
         if ($cache) {
             if ($cache['otp'] == $request->token) {
-//                dd($cache['otp'] == $request->token);
                 $user->password = Hash::make($request->newPassword);
                 $user->save();
                 Cache::forget("otp:{$request->email}");
@@ -327,5 +333,15 @@ class UserManagementController extends Controller {
         return response()->json(['message' => 'Invalid '], 401);
     }
 
+    public function customers(){
+        $customers = User::select('id','first_name','father_name','last_name')->where('role','customer')->get();
+        $customers = $customers->map(function($customer){
+            return[
+                'value'=>$customer->id,
+                'lable'=>$customer->getFullNameAttribute()
+            ];
+        });
+        return response()->json($customers);
+    }
 
 }

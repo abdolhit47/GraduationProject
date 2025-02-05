@@ -18,6 +18,7 @@ class ReportsController extends Controller {
             ->whereYear('created_at', $year)
             ->groupBy('month')
             ->pluck('count', 'month');
+            
         $arabicMonths = [
             1 => 'يناير',
             2 => 'فبراير',
@@ -32,18 +33,24 @@ class ReportsController extends Controller {
             11 => 'نوفمبر',
             12 => 'ديسمبر'
         ];
-        $allMonths = collect(range(1, 12))->mapWithKeys(function ($month) use ($ordersByMonth,$arabicMonths) {
-            $monthName = $arabicMonths[$month]; // الحصول على اسم الشهر بالعربية
-            return [$monthName => $ordersByMonth->get($month, 0)];
+        
+        $allMonths = collect(range(1, 12))->map(function ($month) use ($ordersByMonth, $arabicMonths) {
+            return [
+                'value' => $ordersByMonth->get($month, 0),
+                'month' => $arabicMonths[$month]
+            ];
         });
+        
         $counts = [
             'orders' => $allMonths,
             'tasks' => Task::count(),
             'users' => User::where('role', '!=', 'customer')->count(),
             'costumers' => User::where('role', 'customer')->count(),
         ];
+        
         return response()->json($counts);
     }
+    
     public function generateRevenueReport($year) {
         // أسماء الأشهر بالعربية
         $arabicMonths = [

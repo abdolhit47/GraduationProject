@@ -16,7 +16,11 @@ class OrderManagementController extends Controller {
     public function commissionOrders() {//عرض شحنات في واجهة إضافة طلب جديد
         $orders = CommUser::with('commission')->where('user_id',auth()->user()->id)->get();
         $orders = $orders->pluck('commission');
-        return response()->json($orders->select('id','country'),200);
+        $orders = $orders->map(function($order){
+            return['value'=>$order->id,
+            'lable'=>$order->country];
+        });
+        return response()->json($orders,200);
     }
     public function addOrder(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -33,7 +37,7 @@ class OrderManagementController extends Controller {
             'weight' => ['required', 'numeric', 'min:0'],//الوزن
             'shipping_cost' => ['required', 'numeric', 'min:0'],//تكلفة الشحن
             'shipping_address' => ['required', 'string'],//عنوان الشحن إلى الزبون
-            'expected_delivery_date' => ['required', 'integer'],//تاريخ التسليم المتوقع
+            'expected_delivery_time' => ['required', 'integer'],//تاريخ التسليم المتوقع
         ], [
             'customer_id.required' => 'Customer ID is required',
             'customer_id.exists' => 'Customer ID is invalid',
@@ -47,8 +51,8 @@ class OrderManagementController extends Controller {
             'shipping_cost.numeric' => 'Shipping cost must be a number',
             'shipping_cost.min' => 'Shipping cost must be at least 0',
             'shipping_address.required' => 'Shipping address is required',
-            'expected_delivery_date.required' => 'Expected delivery date is required',
-            'expected_delivery_date.integer' => 'Expected delivery date must be an integer',
+            'expected_delivery_time.required' => 'Expected delivery date is required',
+            'expected_delivery_time.integer' => 'Expected delivery date must be an integer',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -72,20 +76,51 @@ class OrderManagementController extends Controller {
         ], 201);
     }
 
+    public function index() {
+        $orders = Order::with('customer','user')->whereIn('status',['pending', 'purchased', 'shipping'])->get();
+        $orders = $orders->map(function ($order){
+            return[
+                'value' => $order->id,
+                'lable' => $order->order_number,
+                // 'product_name' => $order->product_name,
+                // 'shipping_cost' => (float)$order->shipping_cost,
+                // 'customer_name' => $order->customer->getFullNameAttribute(),
+                // 'status' => $order->status,
+                // 'userid'=>$order->user->id,
+                // 'type'=>$order->user->role,
+            ];
+        });
+        return response()->json($orders,200);
+    }
+    public function indexID($id){
+        $order = Order::with('customer','user')->where('id',$id)->whereIn('status',['pending', 'purchased', 'shipping'])->first();
+        if(!$order){
+            return response()->json('not found');
+        }
+        $order = [
+                'product_name' => $order->product_name,
+                'shipping_cost' => (float)$order->shipping_cost,
+                'customer_name' => $order->customer->getFullNameAttribute(),
+                'status' => $order->status,
+                'value'=>$order->user->id,
+                'lable'=>$order->user->role,
+            ];
+        return response()->json($order,200);
+    }
     public function viewOrders() {
-        $orders = Order::with('customer','commission')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderTR(){
-        $orders = Order::with('customer','commission')->where('commission_id','2')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','2')->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderUEA(){
-        $orders = Order::with('customer','commission')->where('commission_id','3')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','3')->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderCH(){
-        $orders = Order::with('customer','commission')->where('commission_id','1')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','1')->get();
         return response()->json($this->orderview($orders));
     }
      function orderview($orders){
@@ -111,8 +146,15 @@ class OrderManagementController extends Controller {
         $order = Order::findOrFail($orderId);
 
         $validator = Validator::make($request->all(), [
+            'product_name' => ['nullable', 'string'],//اسم المنتج
+            'shipping_cost' => ['nullable', 'numeric', 'min:0'],//تكلفة الشحن
+            'shipping_address' => ['nullable', 'string'],//عنوان الشحن إلى الزبون
+            'expected_delivery_time' => ['nullable', 'integer'],//تاريخ التسليم المتوقع
             'status' => ['nullable', 'string', Rule::in(['pending', 'purchased', 'shipping', 'delivering', 'delivered', 'cancelled'])],
         ], [
+            'shipping_cost.numeric' => 'Shipping cost must be a number',
+            'shipping_cost.min' => 'Shipping cost must be at least 0',
+            'expected_delivery_time.integer' => 'Expected delivery date must be an integer',
             'status.in' => 'Status must be one of the following: pending, purchased, shipping, delivering, delivered, cancelled',
         ]);
         if ($validator->fails()) {
@@ -145,11 +187,11 @@ class OrderManagementController extends Controller {
 
     public function transferOrder(Request $request, $orderId) {
         $request->validate([
-            'new_user_id' => 'required|exists:users,id'
+            'value' => 'required|exists:users,id'
         ]);
 
         $order = Order::findOrFail($orderId);
-        $order->user_id = $request->new_user_id;
+        $order->user_id = $request->value;
         $order->save();
 
         return response()->json([

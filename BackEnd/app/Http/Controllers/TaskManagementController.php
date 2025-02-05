@@ -69,16 +69,48 @@ class TaskManagementController extends Controller {
     }
 
     public function completeTask() {
-        $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'task_status', 'employee_id')
-            ->where('employee_id', Auth::user()->id)
-            ->where('task_status', 'completed')->get();
+        if(Auth::user()->role == 'manager' || Auth::user()->role == 'general_manager') {
+            $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date','duration_in_days', 'task_status', 'employee_id')
+                ->where('task_status', 'pending')->get();
+        }else {
+            $tasks = Task::with('employee')->select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'task_status', 'employee_id')
+                ->where('employee_id', Auth::user()->id)
+                ->where('task_status', 'completed')->get();
+        }
+        $tasks = $tasks->map(function ($task) {
+            return[
+                'id' => $task->id,
+                'task_name' => $task->task_name,
+                'task_details' => $task->task_details,
+                'start_date' => $task->start_date,
+                'end_date' => $task->end_date,
+                'task_status' => $task->task_status,
+                'employee_name' => $task->employee->getFullNameAttribute(),
+            ];
+        });
         return response()->json($tasks,200);
     }
 
     public function notCompleteTask() {
-        $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'employee_id')
-            ->where('employee_id', Auth::user()->id)
-            ->where('task_status', 'not_completed')->get();
+        if(Auth::user()->role == 'manager' || Auth::user()->role == 'general_manager') {
+            $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date','duration_in_days', 'task_status', 'employee_id')
+                ->where('task_status', 'pending')->get();
+        }else {
+            $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'employee_id')
+                ->where('employee_id', Auth::user()->id)
+                ->where('task_status', 'not_completed')->get();
+        }
+        $tasks = $tasks->map(function ($task) {
+            return[
+                'id' => $task->id,
+                'task_name' => $task->task_name,
+                'task_details' => $task->task_details,
+                'start_date' => $task->start_date,
+                'end_date' => $task->end_date,
+                'task_status' => $task->task_status,
+                'employee_name' => $task->employee->getFullNameAttribute(),
+            ];
+        });
         return response()->json($tasks,200);
     }
     public function updateTaskStatus($taskId) {

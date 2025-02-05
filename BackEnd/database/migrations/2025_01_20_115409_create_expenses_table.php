@@ -21,8 +21,8 @@ return new class extends Migration
         Schema::create('employee_salaries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
-            $table->decimal('deduction', 10, 2)->default(0);
-            $table->decimal('bonus', 10, 2)->default(0);
+//            $table->decimal('deduction', 10, 2)->default(0);
+//            $table->decimal('bonus', 10, 2)->default(0);
             $table->decimal('final_salary', 10, 2);
             $table->date('payment_date');
             $table->text('notes')->nullable();
