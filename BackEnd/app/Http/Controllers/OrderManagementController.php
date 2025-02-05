@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Commission;
 use App\Models\CommUser;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -163,8 +164,10 @@ class OrderManagementController extends Controller {
                 'message' => $validator->errors(),
             ], 400);
         }
-
-        $order->update($validator->validated());
+        $validator->setData($validator->getData() + [
+                'delivery_agent_id' =>User::select('id')->where('role', 'delivery_agent')->first()->id,
+            ]);
+        $order->update($validator->getData());
         return response()->json([
             'success' => true,
             'message' => 'Order updated successfully',
