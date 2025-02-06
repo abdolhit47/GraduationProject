@@ -18,8 +18,11 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/users', [UserManagementController::class, 'index']);
     Route::post('/user', [UserManagementController::class, 'store']);
     Route::get('/user/{id}', [UserManagementController::class, 'getUser']);
-    Route::patch('/user/{id}', [UserManagementController::class, 'editUser']);
+    Route::patch('/user', [UserManagementController::class, 'editUser']);
     Route::delete('/user/{id}', [UserManagementController::class, 'deleteUser']);
+    Route::get('/customers', [UserManagementController::class, 'customers']);
+    Route::get('/selectuser', [UserManagementController::class, 'selectuser']);
+    Route::get('/info', [UserManagementController::class, 'info']);
 
     Route::get('/tasks', [TaskManagementController::class, 'index']);
     Route::post('/add-task', [TaskManagementController::class, 'addTask']);

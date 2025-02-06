@@ -21,6 +21,16 @@ class UserManagementController extends Controller {
         return response()->json($users);
     }
 
+    public function info() {
+        $user = Auth::user();
+        $user = [
+            'id' => $user->id,
+            'fullName' => $user->getFullNameAttribute(),
+            'username' => $user->username,
+            'email' => $user->email,
+            'phone' => $user->phone,];
+        return response()->json($user);
+    }
     public function selectuser()  {
         $users = User::select('id','role')->whereIn('role',['general_manager','employee1','employee2'])->get();
         $users = $users->map(function ($user){
@@ -87,32 +97,33 @@ class UserManagementController extends Controller {
         return response()->json($user);
     }
 
-    public function editUser(Request $request, $userId) {
+    public function editUser(Request $request) {
         $validator = Validator::make($request->all(), [
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'father_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'username' => ['nullable', 'string','unique:users,username,'.$userId, 'max:255'],
+            // 'first_name' => ['nullable', 'string', 'max:255'],
+            // 'father_name' => ['nullable', 'string', 'max:255'],
+            // 'last_name' => ['nullable', 'string', 'max:255'],
+            'username' => ['nullable', 'string','unique:users,username,'.Auth::user()->id, 'max:255'],
             'email' => [
                 'nullable',
                 'email',
-                'unique:users,email,'.$userId,
+                'unique:users,email,'.Auth::user()->id,
                 'max:255'
             ],
-            'role' => ['nullable', Rule::in([ 'employee1', 'employee2', 'general_manager','delivery_agent'])],
-            'phone' => ['nullable', 'string','unique:users,phone,'.$userId, 'regex:/^([0-9\s\-\+\(\)]*)$/', 'max:10'],
+            // 'role' => ['nullable', Rule::in([ 'employee1', 'employee2', 'general_manager','delivery_agent'])],
+            // 'phone' => ['nullable', 'string','unique:users,phone,'.$userId, 'regex:/^([0-9\s\-\+\(\)]*)$/', 'max:10'],
         ], [
+            'username.unique' => 'The username has already been taken.',
             'email.unique' => 'The email has already been taken.',
             'email.email' => 'The email must be a valid email address.',
-            'phone.regex' => 'The phone field must be a valid phone number.',
-            'phone.max' => 'The phone field may not be greater than 10 characters.',
+            // 'phone.regex' => 'The phone field must be a valid phone number.',
+            // 'phone.max' => 'The phone field may not be greater than 10 characters.',
 
         ]);
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
-        $user = User::findOrFail($userId);
+        $user = Auth::user();
         $user->update($validator->getData());
         return response()->json(['success' => true, 'user' => $user]);
     }
@@ -193,13 +204,21 @@ class UserManagementController extends Controller {
 //change password with login
     public function changePassword(Request $request)
     {
-        $request->validate([
-            'newPassword' => 'required|string|min:8',       // Validate the new password
-        ]);
+        $validator = Validator::make($request->all(),[
+                'newPassword' => 'required|string|min:8',       // Validate the new password
+            ]
+        ,[
+                'newPassword.required' => 'The new password field is required.',
+                'newPassword.min' => 'The new password must be at least 8 characters.',
+            ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $user = User::where('email',Auth::user()->email)->first();
         // Update the user's password
-        $user->password = Hash::make($request->newPassword);
+        $user->password = Hash::make($validator->validate());
         $user->save();
         return response()->json(['message' => 'Password changed successfully']);
     }
