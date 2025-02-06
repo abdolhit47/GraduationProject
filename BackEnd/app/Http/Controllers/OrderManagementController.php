@@ -83,12 +83,6 @@ class OrderManagementController extends Controller {
             return[
                 'value' => $order->id,
                 'lable' => $order->order_number,
-                // 'product_name' => $order->product_name,
-                // 'shipping_cost' => (float)$order->shipping_cost,
-                // 'customer_name' => $order->customer->getFullNameAttribute(),
-                // 'status' => $order->status,
-                // 'userid'=>$order->user->id,
-                // 'type'=>$order->user->role,
             ];
         });
         return response()->json($orders,200);
@@ -143,6 +137,22 @@ class OrderManagementController extends Controller {
         return $orders;
     }
 
+    public function getOrder($orderId) {
+        $order = Order::findOrFail($orderId);
+        if(!$order){
+            return response()->json('not found');
+        }
+        $order = [
+            'customer_name' => $order->customer->getFullNameAttribute(),
+            'product_name' => $order->product_name,
+            'shipping_cost' => (float)$order->shipping_cost,
+            'status' => $order->status,
+            'phone' => $order->customer->phone,
+            'address' => $order->shipping_address,
+            'expected_delivery_time' => $order->expected_delivery_time,
+        ];
+        return response()->json($order);
+    }
     public function editOrder(Request $request, $orderId) {
         $order = Order::findOrFail($orderId);
 

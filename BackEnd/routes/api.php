@@ -28,12 +28,15 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/notCompleteTask', [TaskManagementController::class, 'notCompleteTask']);
     Route::post('/delete-task', [TaskManagementController::class, 'deleteTask']);
 
+    Route::get('/orders',[OrderManagementController::class,'index']);//عرض طلبات في select
+    Route::get('/orders/{id}',[OrderManagementController::class,'indexID']);//جلب بيانات طلبيات في واجهة تحويل طلبة
     Route::get('/viewCommission', [OrderManagementController::class, 'commissionOrders']);//عرض شحنات في واجهة إضافة طلب جديد
     Route::post('/addOrder', [OrderManagementController::class, 'addOrder']);//اضافة طلب جديد
     Route::get('/viewOrders', [OrderManagementController::class, 'viewOrders']);//->middleware('permission:1,2');//عرض طلبات
     Route::get('/OrdersTR', [OrderManagementController::class, 'viewOrderTR']);//عرض طلبات تركيا
     Route::get('/OrdersUEA', [OrderManagementController::class, 'viewOrderUEA']);//عرض طلبات الإمارات
     Route::get('/OrdersCH', [OrderManagementController::class, 'viewOrderCH']);//عرض طلبات الصين
+    Route::get('/order/{id}', [OrderManagementController::class, 'getOrder']);//جلب بيانات طلبية في واجهة تعديل طلبية
     Route::put('/editOrder/{orderId}', [OrderManagementController::class, 'editOrder']);//تعديل طلب
     Route::delete('/deleteOrder/{orderId}', [OrderManagementController::class, 'deleteOrder']);//حذف طلب
     Route::put('/transferOrder/{orderId}', [OrderManagementController::class, 'transferOrder']);
