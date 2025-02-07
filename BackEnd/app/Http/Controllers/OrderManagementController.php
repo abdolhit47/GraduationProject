@@ -137,6 +137,22 @@ class OrderManagementController extends Controller {
         return $orders;
     }
 
+    public function viewbytype($type) {
+        if($type == 'turkey') {
+            $commission = Commission::select('id')->where('country', $type)->first();
+
+            $orders = Order::select('id', 'order_number')->whereIn('status', ['pending', 'purchased', 'shipping'])->where('commission_id', $commission->id)->get();
+        }
+        elseif ($type == 'uae') {
+            $commission = Commission::select('id')->where('country', $type)->first();
+            $orders = Order::select('id', 'order_number')->whereIn('status', ['pending', 'purchased', 'shipping'])->where('commission_id', $commission->id)->get();
+        }
+        elseif ($type == 'china') {
+            $commission = Commission::select('id')->where('country', $type)->first();
+            $orders = Order::select('id', 'order_number')->whereIn('status', ['pending', 'purchased', 'shipping'])->where('commission_id', $commission->id)->get();
+        }
+        return response()->json($orders);
+    }
     public function getOrder($orderId) {
         $order = Order::findOrFail($orderId);
         if(!$order){
@@ -153,27 +169,39 @@ class OrderManagementController extends Controller {
         ];
         return response()->json($order);
     }
-    public function changePassword(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-                'newPassword' => 'required|string|min:8',       // Validate the new password
-            ]
-            ,[
-                'newPassword.required' => 'The new password field is required.',
-                'newPassword.min' => 'The new password must be at least 8 characters.',
-            ]);
+    public function editOrder(Request $request, $orderId) {
+        $order = Order::findOrFail($orderId);
 
+        $validator = Validator::make($request->all(), [
+            'product_name' => ['nullable', 'string'],//اسم المنتج
+            'shipping_cost' => ['nullable', 'numeric', 'min:0'],//تكلفة الشحن
+            'shipping_address' => ['nullable', 'string'],//عنوان الشحن إلى الزبون
+            'expected_delivery_time' => ['nullable', 'integer'],//تاريخ التسليم المتوقع
+            'status' => ['nullable', 'string', Rule::in(['pending', 'purchased', 'shipping', 'delivering', 'delivered', 'cancelled'])],
+        ], [
+            'shipping_cost.numeric' => 'Shipping cost must be a number',
+            'shipping_cost.min' => 'Shipping cost must be at least 0',
+            'expected_delivery_time.integer' => 'Expected delivery date must be an integer',
+            'status.in' => 'Status must be one of the following: pending, purchased, shipping, delivering, delivered, cancelled',
+        ]);
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors(),
+            ], 400);
+        }
+        if($validator->getData()['status'] == 'delivering') {
+            $validator->setData($validator->getData() + [
+                    'delivery_agent_id' =>User::select('id')->where('role', 'delivery_agent')->first()->id,
+                ]);
         }
 
-        $user = User::where('email',Auth::user()->email)->first();
-        // Update the user's password
-        $user->password = Hash::make($validator->getData()['newPassword']);
-        $user->save();
-        return response()->json(['message' => 'Password changed successfully']);
+        $order->update($validator->getData());
+        return response()->json([
+            'success' => true,
+            'message' => 'Order updated successfully',
+        ]);
     }
-
     public function deleteOrder(Request $request, $orderId) {
         $order = Order::findOrFail($orderId);
 

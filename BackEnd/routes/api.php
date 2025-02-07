@@ -39,6 +39,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/OrdersTR', [OrderManagementController::class, 'viewOrderTR']);//عرض طلبات تركيا
     Route::get('/OrdersUEA', [OrderManagementController::class, 'viewOrderUEA']);//عرض طلبات الإمارات
     Route::get('/OrdersCH', [OrderManagementController::class, 'viewOrderCH']);//عرض طلبات الصين
+    Route::get('/ordertype/{type}', [OrderManagementController::class, 'viewbytype']);//عرض طلبات بنوع
     Route::get('/order/{id}', [OrderManagementController::class, 'getOrder']);//جلب بيانات طلبية في واجهة تعديل طلبية
     Route::put('/editOrder/{orderId}', [OrderManagementController::class, 'editOrder']);//تعديل طلب
     Route::delete('/deleteOrder/{orderId}', [OrderManagementController::class, 'deleteOrder']);//حذف طلب
