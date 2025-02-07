@@ -207,7 +207,7 @@ class UserManagementController extends Controller {
         $validator = Validator::make($request->all(),[
                 'newPassword' => 'required|string|min:8',       // Validate the new password
             ]
-        ,[
+            ,[
                 'newPassword.required' => 'The new password field is required.',
                 'newPassword.min' => 'The new password must be at least 8 characters.',
             ]);
@@ -218,7 +218,7 @@ class UserManagementController extends Controller {
 
         $user = User::where('email',Auth::user()->email)->first();
         // Update the user's password
-        $user->password = Hash::make($validator->validate());
+        $user->password = Hash::make($validator->getData()['newPassword']);
         $user->save();
         return response()->json(['message' => 'Password changed successfully']);
     }
