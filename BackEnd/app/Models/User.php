@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -83,11 +84,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(MoneyTransaction::class, 'delivery_agent_id');
     }
 
-    // علاقة الإشعارات
     public function notifications()
     {
-        return $this->morphMany(Notification::class, 'notifiable');
+        return $this->morphMany(DatabaseNotification::class, 'notifiable');
     }
+
 
     public function getFullNameAttribute()
     {

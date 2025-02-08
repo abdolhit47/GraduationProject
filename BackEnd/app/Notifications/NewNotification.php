@@ -7,34 +7,42 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NewNotification extends Notification implements ShouldQueue
+
+class NewNotification extends Notification
 {
     use Queueable;
-    protected $notifiable, $user_id;
     protected $type;
-    protected $relatedModel;
+    protected $model;
     protected $message;
 
-    public function __construct(string $type, $relatedModel, string $message)
+    // أنواع الإشعارات الممكنة
+    const NEW_ORDER = 'new_order';
+    const ORDER_STATUS = 'order_status';
+    const ASSIGNED_TASK = 'assigned_task';
+
+    public function __construct(string $type, $model, string $message)
     {
         $this->type = $type;
-        $this->relatedModel = $relatedModel;
+        $this->model = $model;
         $this->message = $message;
+//        dd($model);
     }
 
     public function via(object $notifiable): array
     {
+
         return ['database']; // يمكنك إزالة 'mail' إذا لم ترد إرسال إيميل
     }
 
-    public function toDatabase(object $notifiable): array
+    public function toDatabase($notifiable)
     {
         return [
             'type' => $this->type,
+            'user_id' => $this->model->employee_id,
             'message' => $this->message,
-            'related_model_id' => $this->relatedModel->id,
-
-            'timestamp' => now()->toDateTimeString(),
+            'model_id' => $this->model->id, // إضافة هذا الحقل
+            'model_type' => get_class($this->model), // إضافة هذا الحقل
+            'timestamp' => now()->toISOString()
         ];
     }
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
+use App\Notifications\NewNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +66,13 @@ class TaskManagementController extends Controller {
         $validator->setData($validator->getData() + ['start_date' => Carbon::now()->format('Y-m-d'),
 //                'end_date' => Carbon::now()->addDays(intval($validator->getData()['duration_in_days']))->format('Y-m-d')
             ]);
-        Task::create($validator->getData());
+        $task =Task::create($validator->getData());
+        $user = User::find($task->employee_id);
+        $user->notify(new NewNotification(
+            NewNotification::ASSIGNED_TASK, // يجب تغيير النوع هنا
+            $task,
+            'مهمة جديدة مخصصة لك: ' . $task->task_name
+        ));
         return response()->json('Task status added successfully', 200);
     }
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('delivery_agent_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('order_number')->unique();
             $table->foreignId('commission_id')->constrained('commissions')->onDelete('cascade');
+            $table->string('product_name');
             $table->enum('product_type', ['electronics', 'clothes', 'home_supplies', 'cosmetics', 'toys', 'sports', 'other']);
             $table->decimal('weight', 10, 2);
             $table->decimal('shipping_cost', 10, 2)->default(0);
