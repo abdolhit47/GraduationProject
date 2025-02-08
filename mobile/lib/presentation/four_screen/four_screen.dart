@@ -115,7 +115,23 @@ class FourScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildNameInputField(BuildContext context) {
+  Widget _buildFirstNameInputField(BuildContext context) {
+    return BlocSelector<FourBloc, FourState, TextEditingController?>(
+      selector: (state) => state.nameInputFieldController,
+      builder: (context, nameInputFieldController) {
+        return CustomTextFormField(
+          controller: nameInputFieldController,
+          hintText: "first_name".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 20.h,
+            vertical: 10.h,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLastNameInputField(BuildContext context) {
     return BlocSelector<FourBloc, FourState, TextEditingController?>(
       selector: (state) => state.nameInputFieldController,
       builder: (context, nameInputFieldController) {
@@ -202,10 +218,28 @@ class FourScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  "lbl6".tr,
+                  "first_name".tr,
                   style: CustomTextStyles.labelLargeBluegray800,
                 ),
-                _buildNameInputField(context)
+                _buildFirstNameInputField(context)
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+          Container(
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadiusStyle.roundedBorder8,
+            ),
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "last_name".tr,
+                  style: CustomTextStyles.labelLargeBluegray800,
+                ),
+                _buildLastNameInputField(context)
               ],
             ),
           ),

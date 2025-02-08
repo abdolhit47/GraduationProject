@@ -53,18 +53,19 @@ class SeventeenPageState extends State<SeventeenPage>
                 style: CustomTextStyles.bodyMediumBluegray30001_1,
               ),
               SizedBox(height: 8.h),
-              _buildTabview(context),
-              Expanded(
-                child: Container(
-                  child: TabBarView(
-                    controller: tabviewController,
-                    children: [
-                      SeventeenTabPage.builder(context),
-                      SeventeenTabPage.builder(context)
-                    ],
-                  ),
-                ),
-              )
+              Expanded(child: SeventeenTabPage.builder(context)),
+              // _buildTabview(context),
+              // Expanded(
+              //   child: Container(
+              //     child: TabBarView(
+              //       controller: tabviewController,
+              //       children: [
+              //         SeventeenTabPage.builder(context),
+              //         SeventeenTabPage.builder(context)
+              //       ],
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),

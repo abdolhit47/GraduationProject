@@ -69,7 +69,9 @@ class TwentyfiveScreen extends StatelessWidget {
                           SizedBox(height: 16.h),
                           _buildUsernameInputColumn(context),
                           SizedBox(height: 16.h),
-                          _buildFullNameInputColumn(context),
+                          _buildFirstNameInputColumn(context),
+                          SizedBox(height: 16.h),
+                          _buildLastNameInputColumn(context),
                           SizedBox(height: 16.h),
                           _buildPhoneNumberInputColumn(context),
                           SizedBox(height: 16.h),
@@ -194,7 +196,7 @@ class TwentyfiveScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildFullNameInputColumn(BuildContext context) {
+  Widget _buildFirstNameInputColumn(BuildContext context) {
     return Container(
       width: double.maxFinite,
       decoration: BoxDecoration(
@@ -205,7 +207,27 @@ class TwentyfiveScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            "lbl6".tr,
+            "first_name".tr,
+            style: CustomTextStyles.labelLargeBluegray800,
+          ),
+          _buildFullNameInputField(context)
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLastNameInputColumn(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadiusStyle.roundedBorder8,
+      ),
+      child: Column(
+        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            "last_name".tr,
             style: CustomTextStyles.labelLargeBluegray800,
           ),
           _buildFullNameInputField(context)

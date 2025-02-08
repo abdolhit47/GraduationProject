@@ -54,6 +54,9 @@ class ConfrmashnScreen extends StatelessWidget {
       leading: AppbarLeadingImageOne(
         imagePath: ImageConstant.imgArrowDown,
         height: 20.h,
+        onTap: () {
+          NavigatorService.goBack();
+        },
         margin: EdgeInsets.only(left: 13.h),
       ),
       title: AppbarSubtitleOne(
