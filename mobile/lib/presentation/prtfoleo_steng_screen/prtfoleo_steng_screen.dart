@@ -106,7 +106,11 @@ class PrtfoleoStengScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    _buildNameSection(context),
+                    _buildFirstNameSection(context),
+                    SizedBox(height: 8.h),
+                    _buildLastNameSection(context),
+                    SizedBox(height: 8.h),
+                    _buildUserNameSection(context),
                     SizedBox(height: 8.h),
                     _buildPhoneSection(context),
                     SizedBox(height: 10.h),
@@ -193,7 +197,7 @@ class PrtfoleoStengScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildNameSection(BuildContext context) {
+  Widget _buildFirstNameSection(BuildContext context) {
     return SizedBox(
       width: double.maxFinite,
       child: Column(
@@ -202,7 +206,47 @@ class PrtfoleoStengScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(right: 16.h),
             child: Text(
-              "lbl13".tr,
+              "first_name".tr,
+              style: CustomTextStyles.titleSmallCairoGray40003,
+            ),
+          ),
+          _buildNameInput(context)
+        ],
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildLastNameSection(BuildContext context) {
+    return SizedBox(
+      width: double.maxFinite,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 16.h),
+            child: Text(
+              "last_name".tr,
+              style: CustomTextStyles.titleSmallCairoGray40003,
+            ),
+          ),
+          _buildNameInput(context)
+        ],
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildUserNameSection(BuildContext context) {
+    return SizedBox(
+      width: double.maxFinite,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 16.h),
+            child: Text(
+              "lbl10".tr,
               style: CustomTextStyles.titleSmallCairoGray40003,
             ),
           ),

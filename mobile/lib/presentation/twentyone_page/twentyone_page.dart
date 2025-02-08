@@ -177,11 +177,21 @@ class TwentyonePage extends StatelessWidget {
                   TwentyoneOneItemModel model =
                       twentyoneModelObj?.twentyoneOneItemList[index] ??
                           TwentyoneOneItemModel();
-                  if (index == 2) {
-                    model = model.copyWith(onTap: () {
-                      Navigator.pushNamed(context, AppRoutes.seventeenPage);
-                    });
-                  }
+
+                  model = model.copyWith(onTap: () {
+                    print(index);
+                    switch (index) {
+                      case 0:
+                        NavigatorService.pushNamed(
+                          AppRoutes.prtfoleoStengScreen,
+                        );
+                        break;
+                      case 2:
+                        Navigator.pushNamed(context, AppRoutes.seventeenPage);
+                        break;
+                    }
+                  });
+
                   return TwentyoneOneItemWidget(model);
                 },
               );
