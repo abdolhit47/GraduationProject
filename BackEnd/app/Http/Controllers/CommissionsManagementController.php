@@ -82,7 +82,11 @@ class CommissionsManagementController extends Controller {
             ], 404);
         }
 
-        $commission->update($validator->validated());
+        $commission->update([
+            'country' => $validator->validated()['country']??$commission->country,
+            'commission' => $validator->validated()['modified_commission']??$commission->commission,
+            'price_per_kg' => $validator->validated()['price_per_kg']??$commission->price_per_kg,
+        ]);
 //        dd($commission);
         return response()->json([
             'status' => 'success',

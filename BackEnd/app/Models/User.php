@@ -95,6 +95,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->first_name . ' ' . $this->father_name . ' ' . $this->last_name;
     }
 
+    public function emloyeesalary(){
+        return $this->hasMany(EmloyeeSalary::class, 'employee_id','id');
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();

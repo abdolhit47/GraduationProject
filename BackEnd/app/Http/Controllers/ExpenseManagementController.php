@@ -89,7 +89,7 @@ class ExpenseManagementController extends Controller {
             'final_salary' => 'required|numeric|min:0',
 //            'deduction' => 'required|numeric|min:0',
 //            'bonus' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
+//            'payment_date' => 'required|date',
             'notes' => 'nullable|string|max:500',
         ], [
             'user_id.required' => 'User ID is required.',
@@ -100,8 +100,8 @@ class ExpenseManagementController extends Controller {
 //            'deduction.numeric' => 'Deduction must be a number.',
 //            'bonus.required' => 'Bonus is required.',
 //            'bonus.numeric' => 'Bonus must be a number.',
-            'payment_date.required' => 'Date is required.',
-            'payment_date.date' => 'Date must be a valid date.',
+//            'payment_date.required' => 'Date is required.',
+//            'payment_date.date' => 'Date must be a valid date.',
         ]);
 
         if ($validator->fails()) {

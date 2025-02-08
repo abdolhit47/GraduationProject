@@ -18,7 +18,7 @@ class ReportsController extends Controller {
             ->whereYear('created_at', $year)
             ->groupBy('month')
             ->pluck('count', 'month');
-            
+
         $arabicMonths = [
             1 => 'يناير',
             2 => 'فبراير',
@@ -33,24 +33,24 @@ class ReportsController extends Controller {
             11 => 'نوفمبر',
             12 => 'ديسمبر'
         ];
-        
+
         $allMonths = collect(range(1, 12))->map(function ($month) use ($ordersByMonth, $arabicMonths) {
             return [
                 'value' => $ordersByMonth->get($month, 0),
                 'month' => $arabicMonths[$month]
             ];
         });
-        
+
         $counts = [
             'orders' => $allMonths,
             'tasks' => Task::count(),
             'users' => User::where('role', '!=', 'customer')->count(),
             'costumers' => User::where('role', 'customer')->count(),
         ];
-        
+
         return response()->json($counts);
     }
-    
+
     public function generateRevenueReport($year) {
         // أسماء الأشهر بالعربية
         $arabicMonths = [
@@ -123,36 +123,141 @@ class ReportsController extends Controller {
         ]);
     }
 
-    public function viewExpenses() {
-        $EmloyeeSalary = EmloyeeSalary::all();
-    }
-
-    public function Earnings() {//EarningsReport
+    public function viewExpenses($year = null) {
         $year = $year ?? date('Y');
-        $month = $month ?? date('m');
-        //الايجار
-        $rentalMonthly = Rental::selectRaw('
-                SUM(amount) as total_rental
-            ')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->get();
-//        dd($rentalMonthly);
-        // رواتب الموظفين
-        $salaryMonthly = EmloyeeSalary::selectRaw('
-                SUM(final_salary) as total_salary
-            ')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->get();
 
-        // مصروفات أخرى
-        $expenseMonthly = Expense::selectRaw('
-                SUM(amount) as total_expense
-            ')
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->get();
-        dd($expenseMonthly);
+        // إنشاء هيكل أساسي لجميع أشهر السنة
+        $months = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthNumber = str_pad($m, 2, '0', STR_PAD_LEFT);
+            $monthName = \Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F');
+            $months[$monthNumber] = [
+                'month_number' => $m,
+                'month_name' => $monthName,
+                'rentals' => [],
+                'rental_total' => 0,
+                'salaries' => [],
+                'salary_total' => 0,
+                'expenses' => [],
+                'expense_total' => 0,
+                'total' => 0,
+            ];
+        }
+
+        // معالجة الإيجارات
+        $rentals = Rental::select('id','name', 'amount', 'created_at')->whereYear('created_at', $year)->get();
+        foreach ($rentals as $rental) {
+            $month = $rental->created_at->format('m');
+            $months[$month]['rentals'][] = $rental;
+            $months[$month]['rental_total'] += $rental->amount;
+            $months[$month]['total'] += $rental->amount;
+        }
+
+        // معالجة الرواتب
+        $salaries = EmloyeeSalary::with('employee')->select('id', 'employee_id', 'final_salary', 'created_at')->whereYear('created_at', $year)->get();
+        foreach ($salaries as $salary) {
+
+            $month = $salary->created_at->format('m');
+            $rentalData = $salary->toArray();
+            $rentalData['employee_name'] = $salary->employee->getFullNameAttribute();
+            unset($rentalData['employee']);
+            unset($rentalData['employee_id']);
+            $months[$month]['salaries'][] = $rentalData;
+            $months[$month]['salary_total'] += $rentalData['final_salary'];
+            $months[$month]['total'] += $rentalData['final_salary'];
+        }
+
+        // معالجة المصروفات
+        $expenses = Expense::select('id', 'type', 'amount', 'created_at')->whereYear('created_at', $year)->get();
+        foreach ($expenses as $expense) {
+            $month = $expense->created_at->format('m');
+            $months[$month]['expenses'][] = $expense;
+            $months[$month]['expense_total'] += $expense->amount;
+            $months[$month]['total'] += $expense->amount;
+        }
+
+        // تحويل المصفوفة إلى قائمة مرتبة
+        $orderedMonths = array_values($months);
+
+        return response()->json($orderedMonths);
     }
+//    private function getAllMonths($Earnings){
+//        $monthlyRentals = [];
+//        foreach ($Earnings as $rental) {
+//            $month = $rental->created_at->format('m'); // رقم الشهر (01 إلى 12)
+//            $monthName = $rental->created_at->translatedFormat('F'); // اسم الشهر بالعربية
+//
+//            if (!isset($monthlyRentals[$month])) {
+//                $monthlyRentals[$month] = [
+//                    'month_name' => $monthName,
+//                    'records' => []
+//                ];
+//            }
+//            $rentalData = $rental->toArray();
+//            // Extract employee name
+//            if($rental->employee){
+//                $rentalData['employee_name'] = $rental->employee->getFullNameAttribute();
+//                unset($rentalData['employee']);
+//                unset($rentalData['employee_id']);
+//            }
+//
+//            unset($rentalData['created_at']);
+//            $monthlyRentals[$month]['records'][] = $rentalData;
+//        }
+//        // إنشاء مصفوفة لجميع أشهر السنة (حتى الفارغة)
+//        $allMonths = [];
+//        for ($m = 1; $m <= 12; $m++) {
+//            $monthNumber = str_pad($m, 2, '0', STR_PAD_LEFT);
+//            $monthName = now()->month($m)->translatedFormat('F');
+//
+//            $allMonths[$monthNumber] = [
+//                'month_name' => $monthName,
+//                'records' => $monthlyRentals[$monthNumber]['records'] ?? []
+//            ];
+//        }
+//        return $allMonths;
+//    }
+
+
+    public function Earnings($year = null, $month = null) {//EarningsReport
+        $year = $year ?? date('Y');
+        $month = $month ?? null;
+
+        $query = Order::join('commissions', 'orders.commission_id', '=', 'commissions.id')
+            ->selectRaw('SUM( commissions.commission) as total_commission')
+            ->whereYear('orders.created_at', $year);
+
+        if ($month) {
+            $query->whereMonth('orders.created_at', $month);
+        }
+
+        $result = $query->first();
+        $dateFilter = function($query) use ($year, $month) {
+            $query->whereYear('created_at', $year);
+            if ($month) $query->whereMonth('created_at', $month);
+        };
+
+        // حساب الإيجارات
+        $rentalQuery = Rental::where($dateFilter);
+        $rentalTotal = $rentalQuery->sum('amount');
+
+        // حساب الرواتب
+        $salaryQuery = EmloyeeSalary::where($dateFilter);
+        $salaryTotal = $salaryQuery->sum('final_salary');
+
+        // حساب المصروفات (مع مراعاة حقل payment_date)
+        $expenseQuery = Expense::whereYear('payment_date', $year);
+        if ($month) $expenseQuery->whereMonth('payment_date', $month);
+        $expenseTotal = $expenseQuery->sum('amount');
+
+        // الإجمالي الكلي
+        $overallTotal = $rentalTotal + $salaryTotal + $expenseTotal;
+        return [
+            'total_commission' => $result->total_commission ?? 0,
+            'period' => $month ? "Month $month, $year" : "Year $year",
+            'Expense total' => $overallTotal,
+            'Earnings total'=> $result->total_commission - $overallTotal
+        ];
+    }
+
 }

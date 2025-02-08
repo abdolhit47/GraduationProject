@@ -52,8 +52,8 @@ class UserManagementController extends Controller {
             ],
             'role' => ['required', Rule::in([ 'employee1', 'employee2', 'general_manager','delivery_agent'])],
             'phone' => ['required','nullable', 'string','unique:users,phone', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'max:10'],
-            'commission_id' => ['required', 'array'],
-            'commission_id.*' => ['integer', 'exists:commissions,id'],
+//            'commission_id' => ['required', 'array'],
+//            'commission_id.*' => ['integer', 'exists:commissions,id'],
         ], [
             'first_name.required' => 'The first name field is required.',
             'father_name.required' => 'The father name field is required.',
@@ -82,11 +82,21 @@ class UserManagementController extends Controller {
             'password' => Hash::make('123456789'),
 //            'commission_id'=> $request->role == 'general_manager' ? 1 : ($request->role == 'employee1' ? 2 : ($request->role == 'employee2' ? 3: Null)),
         ]);
-        foreach ($request->commission_id as $commission_id) {
+        // Add commission
+        if($request->role == 'general_manager') {
             $commission = new CommUser;
             $commission->user_id = $user->id;
-            $commission->commission_id = $commission_id;
+            $commission->commission_id = 1;
             $commission->save();
+        }
+        elseif ($request->role == 'employee1') {
+            for ($i = 2; $i < 4; $i++) {
+                $commission = new CommUser;
+                $commission->user_id = $user->id;
+                $commission->commission_id = $i;
+                $commission->save();
+            }
+
         }
 
         return response()->json(['success' => true], 201);
@@ -96,36 +106,52 @@ class UserManagementController extends Controller {
         $user = User::find($userId);
         return response()->json($user);
     }
-
-    public function editUser(Request $request) {
+    public function userSalary($userId) {
+        $user = User::find($userId);
+        $user = [
+            'id' => $user->id,
+            'fullname' => $user->getFullNameAttribute(),
+            'role' => $user->role,
+            'salary' => $user->salary,
+        ];
+        return response()->json($user);
+    }
+    public function editUser(Request $request, $userId = Null) {
+        $userId =  $userId ?? Auth::user()->id;
+//        dd($userId);
         $validator = Validator::make($request->all(), [
-            // 'first_name' => ['nullable', 'string', 'max:255'],
-            // 'father_name' => ['nullable', 'string', 'max:255'],
-            // 'last_name' => ['nullable', 'string', 'max:255'],
-            'username' => ['nullable', 'string','unique:users,username,'.Auth::user()->id, 'max:255'],
+             'first_name' => ['nullable', 'string', 'max:255'],
+             'father_name' => ['nullable', 'string', 'max:255'],
+             'last_name' => ['nullable', 'string', 'max:255'],
+            'username' => ['nullable', 'string','unique:users,username,'.$userId, 'max:255'],
             'email' => [
                 'nullable',
                 'email',
-                'unique:users,email,'.Auth::user()->id,
+                'unique:users,email,'.$userId,
                 'max:255'
             ],
-            // 'role' => ['nullable', Rule::in([ 'employee1', 'employee2', 'general_manager','delivery_agent'])],
-            // 'phone' => ['nullable', 'string','unique:users,phone,'.$userId, 'regex:/^([0-9\s\-\+\(\)]*)$/', 'max:10'],
+             'role' => ['nullable', Rule::in([ 'employee1', 'employee2', 'general_manager','delivery_agent'])],
+             'phone' => ['nullable', 'string','unique:users,phone,'.$userId, 'regex:/^([0-9\s\-\+\(\)]*)$/', 'max:10'],
         ], [
             'username.unique' => 'The username has already been taken.',
             'email.unique' => 'The email has already been taken.',
             'email.email' => 'The email must be a valid email address.',
-            // 'phone.regex' => 'The phone field must be a valid phone number.',
-            // 'phone.max' => 'The phone field may not be greater than 10 characters.',
+             'phone.regex' => 'The phone field must be a valid phone number.',
+             'phone.max' => 'The phone field may not be greater than 10 characters.',
 
         ]);
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
-        $user = Auth::user();
+        if($userId) {
+            $user = User::find($userId);
+        }else{
+            $user = Auth::user();
+        }
+
         $user->update($validator->getData());
-        return response()->json(['success' => true, 'user' => $user]);
+        return response()->json(['success' => true,'message' => 'User updated successfully'], 200);
     }
     public function deleteUser($userId) {
         $user = User::findOrFail($userId);

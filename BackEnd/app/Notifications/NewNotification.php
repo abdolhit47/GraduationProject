@@ -20,12 +20,12 @@ class NewNotification extends Notification
     const ORDER_STATUS = 'order_status';
     const ASSIGNED_TASK = 'assigned_task';
 
+    const TRANSFERORDER = 'transfer_order';
     public function __construct(string $type, $model, string $message)
     {
         $this->type = $type;
         $this->model = $model;
         $this->message = $message;
-//        dd($model);
     }
 
     public function via(object $notifiable): array
@@ -38,8 +38,7 @@ class NewNotification extends Notification
     {
         return [
             'type' => $this->type,
-            'user_id' => $this->model->employee_id,
-            'message' => $this->message,
+            'data' => $this->message,
             'model_id' => $this->model->id, // إضافة هذا الحقل
             'model_type' => get_class($this->model), // إضافة هذا الحقل
             'timestamp' => now()->toISOString()

@@ -12,7 +12,11 @@ class EmloyeeSalary extends Model
 //        'deduction',//خصمات
 //        'bonus',//مكافأة
         'final_salary',//الراتب النهائي
-        'payment_date',//تاريخ الدفع
+//        'payment_date',//تاريخ الدفع
         'notes',//ملاحظات
     ];
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'employee_id','id');
+    }
 }

@@ -24,7 +24,7 @@ return new class extends Migration
 //            $table->decimal('deduction', 10, 2)->default(0);
 //            $table->decimal('bonus', 10, 2)->default(0);
             $table->decimal('final_salary', 10, 2);
-            $table->date('payment_date');
+//            $table->date('payment_date');
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

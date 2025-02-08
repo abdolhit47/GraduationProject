@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommissionsManagementController;
 use App\Http\Controllers\ExpenseManagementController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\RentalsManagementController;
 use App\Http\Controllers\ReportsController;
@@ -18,7 +19,9 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/users', [UserManagementController::class, 'index']);
     Route::post('/user', [UserManagementController::class, 'store']);
     Route::get('/user/{id}', [UserManagementController::class, 'getUser']);
+    Route::get('/userSalary/{id}', [UserManagementController::class, 'userSalary']);
     Route::patch('/user', [UserManagementController::class, 'editUser']);
+    Route::put('/user/{id}', [UserManagementController::class, 'editUser']);
     Route::delete('/user/{id}', [UserManagementController::class, 'deleteUser']);
     Route::get('/customers', [UserManagementController::class, 'customers']);
     Route::get('/selectuser', [UserManagementController::class, 'selectuser']);
@@ -60,7 +63,8 @@ Route::middleware(['auth:api'])->group( function () {
     Route::post('/salary', [ExpenseManagementController::class, 'addsalary']);//تعديل راتب
 
     Route::get('/home/{year}', [ReportsController::class, 'index']);
-    Route::get('/reports/{year}', [ReportsController::class, 'generateRevenueReport']);
-    Route::get('/reports/expenses', [ReportsController::class, 'viewExpenses']);
-    Route::get('/Earnings', [ReportsController::class, 'Earnings']);
+    Route::get('/reports/{year}', [ReportsController::class, 'generateRevenueReport']);//تقارير الايرادات
+    Route::get('/expenses/{year}/', [ReportsController::class, 'viewExpenses']);//تقارير المصاريف
+    Route::get('/Earnings/{year?}/{month?}', [ReportsController::class, 'Earnings']);//تقارير الأرباح
+    Route::get('/notifications', [NotificationController::class, 'index']);
 });

@@ -6,6 +6,7 @@ use App\Models\Commission;
 use App\Models\CommUser;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\NewNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -68,8 +69,12 @@ class OrderManagementController extends Controller {
         ]);
 
         $order = Order::create($validator->getData());
-        //send email to customer
-        //send notification to customer
+        $user = User::find($order->customer_id);
+        $user->notify(new NewNotification(
+            NewNotification::NEW_ORDER, // يجب تغيير النوع هنا
+            $order,
+            'طلبية جديدة مخصصة لك: ' . $order->product_name
+        ));
         return response()->json([
             'Message' => 'Order added successfully',
             'success' => true,
@@ -151,6 +156,10 @@ class OrderManagementController extends Controller {
             $commission = Commission::select('id')->where('country', $type)->first();
             $orders = Order::select('id', 'order_number')->whereIn('status', ['pending', 'purchased', 'shipping'])->where('commission_id', $commission->id)->get();
         }
+        $orders = $orders->map(function($order){
+            return['value'=>$order->id,
+                'lable'=>$order->order_number];
+        });
         return response()->json($orders);
     }
     public function getOrder($orderId) {
@@ -195,8 +204,17 @@ class OrderManagementController extends Controller {
                     'delivery_agent_id' =>User::select('id')->where('role', 'delivery_agent')->first()->id,
                 ]);
         }
-
-        $order->update($validator->getData());
+        if($validator->getData()['status'] == $order->status) {
+            $order->update($validator->getData());
+        }else{
+            $order->update($validator->getData());
+            $user = User::find($order->customer_id);
+            $user->notify(new NewNotification(
+                NewNotification::ORDER_STATUS, // يجب تغيير النوع هنا
+                $order,
+                'تم تحديث حالة الطلبية: ' . $order->product_name
+            ));
+        }
         return response()->json([
             'success' => true,
             'message' => 'Order updated successfully',
@@ -217,13 +235,29 @@ class OrderManagementController extends Controller {
     }
 
     public function transferOrder(Request $request, $orderId) {
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'value' => 'required|exists:users,id'
+        ],[
+            'value.required' => 'User ID is required',
+            'value.exists' => 'User ID is invalid',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors(),
+            ], 400);
+        }
 
         $order = Order::findOrFail($orderId);
-        $order->user_id = $request->value;
+        $order->user_id = $validator->validate()['value'];
         $order->save();
+
+        $user = User::find($validator->validate()['value']);
+        $user->notify(new NewNotification(
+            NewNotification::TRANSFERORDER,
+            $order,
+            'تم تحويل الطلبية إليك '
+        ));
 
         return response()->json([
             'success' => true,
