@@ -26,22 +26,28 @@ class NineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: theme.colorScheme.onPrimary,
-      body: SafeArea(
-        child: Navigator(
-          key: navigatorKey,
-          initialRoute: AppRoutes.nineInitialPage,
-          onGenerateRoute: (routeSetting) => PageRouteBuilder(
-            pageBuilder: (ctx, ani, ani1) =>
-                getCurrentPage(context, routeSetting.name!),
-            transitionDuration: Duration(seconds: 0),
+    return BlocProvider<NineBloc>(
+      create: (context) => NineBloc(NineState(
+        nineModelObj: NineModel(),
+      ))
+        ..add(NineInitialEvent()),
+      child: Scaffold(
+        backgroundColor: theme.colorScheme.onPrimary,
+        body: SafeArea(
+          child: Navigator(
+            key: navigatorKey,
+            initialRoute: AppRoutes.nineInitialPage,
+            onGenerateRoute: (routeSetting) => PageRouteBuilder(
+              pageBuilder: (ctx, ani, ani1) =>
+                  getCurrentPage(context, routeSetting.name!),
+              transitionDuration: Duration(seconds: 0),
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: SizedBox(
-        width: double.maxFinite,
-        child: _buildBottomNavigation(context),
+        bottomNavigationBar: SizedBox(
+          width: double.maxFinite,
+          child: _buildBottomNavigation(context),
+        ),
       ),
     );
   }
@@ -64,8 +70,6 @@ class NineScreen extends StatelessWidget {
     switch (type) {
       case BottomBarEnum.tf:
         return AppRoutes.nineInitialPage;
-      default:
-        return "/";
     }
   }
 

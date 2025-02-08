@@ -13,17 +13,15 @@ import '../core/app_export.dart';
 
 enum BottomBarEnum { tf }
 
-// ignore_for_file: must_be_immutable
 class CustomBottomBar extends StatefulWidget {
   CustomBottomBar({this.onChanged});
 
-  Function(BottomBarEnum)? onChanged;
+  final Function(BottomBarEnum)? onChanged;
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();
 }
 
-// ignore_for_file: must_be_immutable
 class CustomBottomBarState extends State<CustomBottomBar> {
   final List<Widget> _screens = [
     NineInitialPage(),

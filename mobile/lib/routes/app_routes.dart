@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduatioproject/presentation/seventeen_page/seventeen_page.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import '../presentation/arshf_one_screen/arshf_one_screen.dart';
 import '../presentation/arshf_screen/arshf_screen.dart';
@@ -72,6 +73,7 @@ class AppRoutes {
         twoScreen: TwoScreen.builder,
         fourScreen: FourScreen.builder,
         twentyfiveScreen: TwentyfiveScreen.builder,
+        seventeenPage: SeventeenPage.builder,
         sixScreen: SixScreen.builder,
         nineScreen: NineScreen.builder,
         confrmashnScreen: ConfrmashnScreen.builder,

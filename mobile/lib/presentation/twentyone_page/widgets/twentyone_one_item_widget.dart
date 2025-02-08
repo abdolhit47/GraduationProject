@@ -14,32 +14,35 @@ class TwentyoneOneItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CustomImageView(
-          imagePath: ImageConstant.imgArrowLeft,
-          height: 16.h,
-          width: 18.h,
-        ),
-        Spacer(),
-        Text(
-          twentyoneOneItemModelObj.tf!,
-          style: CustomTextStyles.bodySmallGray90005_1,
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 12.h),
-          child: CustomIconButton(
-            height: 32.h,
-            width: 32.h,
-            padding: EdgeInsets.all(8.h),
-            decoration: IconButtonStyleHelper.fillGray,
-            child: CustomImageView(
-              imagePath: twentyoneOneItemModelObj.iconuserOne!,
-            ),
+    return InkWell(
+      onTap: twentyoneOneItemModelObj.onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomImageView(
+            imagePath: ImageConstant.imgArrowLeft,
+            height: 16.h,
+            width: 18.h,
           ),
-        )
-      ],
+          Spacer(),
+          Text(
+            twentyoneOneItemModelObj.tf!,
+            style: CustomTextStyles.bodySmallGray90005_1,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 12.h),
+            child: CustomIconButton(
+              height: 32.h,
+              width: 32.h,
+              padding: EdgeInsets.all(8.h),
+              decoration: IconButtonStyleHelper.fillGray,
+              child: CustomImageView(
+                imagePath: twentyoneOneItemModelObj.iconuserOne!,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

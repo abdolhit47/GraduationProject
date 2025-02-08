@@ -15,10 +15,7 @@ import 'widgets/pricinglist_item_widget.dart';
 import 'widgets/slider_item_widget.dart';
 
 class NineInitialPage extends StatefulWidget {
-  const NineInitialPage({Key? key})
-      : super(
-          key: key,
-        );
+  const NineInitialPage({Key? key}) : super(key: key);
 
   @override
   NineInitialPageState createState() => NineInitialPageState();
@@ -36,36 +33,43 @@ class NineInitialPage extends StatefulWidget {
 class NineInitialPageState extends State<NineInitialPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      decoration: AppDecoration.semanticWhite,
-      child: Column(
-        children: [
-          Expanded(
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.only(
-                left: 24.h,
-                top: 16.h,
-                right: 24.h,
+    return BlocProvider<NineBloc>(
+      create: (context) => NineBloc(NineState(
+        nineInitialModelObj: NineInitialModel(),
+      ))
+        ..add(NineInitialEvent()),
+      child: Container(
+        width: MediaQuery.sizeOf(context).width,
+        decoration: AppDecoration.semanticWhite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Container(
+                width: double.maxFinite,
+                padding: EdgeInsets.only(
+                  left: 24.h,
+                  top: 16.h,
+                  right: 24.h,
+                ),
+                child: Column(
+                  spacing: 22,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildPromoSlider(context),
+                    Text(
+                      "lbl16".tr,
+                      style: CustomTextStyles.titleSmallBluegray90003,
+                    ),
+                    _buildPricingList(context),
+                    SizedBox(height: 26.h)
+                  ],
+                ),
               ),
-              child: Column(
-                spacing: 22,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _buildPromoSlider(context),
-                  Text(
-                    "lbl16".tr,
-                    style: CustomTextStyles.titleSmallBluegray90003,
-                  ),
-                  _buildPricingList(context),
-                  SizedBox(height: 26.h)
-                ],
-              ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -111,13 +115,14 @@ class NineInitialPageState extends State<NineInitialPage> {
   Widget _buildPromoSlider(BuildContext context) {
     return SizedBox(
       height: 180.h,
-      width: double.maxFinite,
+      width: MediaQuery.sizeOf(context).width,
       child: Stack(
         alignment: Alignment.center,
         children: [
           BlocBuilder<NineBloc, NineState>(
             builder: (context, state) {
               return CarouselSlider.builder(
+                controller: CarouselSliderController(),
                 options: CarouselOptions(
                   height: 180.h,
                   initialPage: 0,
@@ -136,9 +141,7 @@ class NineInitialPageState extends State<NineInitialPage> {
                   SliderItemModel model =
                       state.nineInitialModelObj?.sliderItemList[index] ??
                           SliderItemModel();
-                  return SliderItemWidget(
-                    model,
-                  );
+                  return SliderItemWidget(model);
                 },
               );
             },

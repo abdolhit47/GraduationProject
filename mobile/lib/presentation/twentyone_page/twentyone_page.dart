@@ -9,91 +9,90 @@ import 'models/twentyone_one_item_model.dart';
 import 'widgets/twentyone_one_item_widget.dart'; // ignore_for_file: must_be_immutable
 
 class TwentyonePage extends StatelessWidget {
-  const TwentyonePage({Key? key})
-      : super(
-          key: key,
-        );
+  const TwentyonePage({Key? key}) : super(key: key);
 
   static Widget builder(BuildContext context) {
+    return TwentyonePage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider<TwentyoneBloc>(
       create: (context) => TwentyoneBloc(TwentyoneState(
         twentyoneModelObj: TwentyoneModel(),
       ))
         ..add(TwentyoneInitialEvent()),
-      child: TwentyonePage(),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: theme.colorScheme.onPrimary,
-      body: SafeArea(
-        child: Container(
-          width: double.maxFinite,
-          decoration: AppDecoration.semanticWhite,
-          child: Column(
-            children: [
-              _buildProfileStack(context),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: EdgeInsets.symmetric(horizontal: 24.h),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 74.h),
-                        SizedBox(
-                          width: double.maxFinite,
-                          child: Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  "lbl53".tr,
-                                  style: CustomTextStyles.bodySmallGray9000511,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              _buildSettingsColumn(context),
-                              SizedBox(height: 22.h),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  "lbl60".tr,
-                                  style: CustomTextStyles.bodySmallGray9000511,
-                                ),
-                              ),
-                              SizedBox(height: 4.h),
-                              _buildInfoColumn(context),
-                              SizedBox(height: 12.h),
-                              _buildLogoutButton(context),
-                              SizedBox(height: 12.h),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "lbl64".tr,
-                                    style: CustomTextStyles
-                                        .bodyMediumBluegray30001_1,
+      child: Scaffold(
+        backgroundColor: theme.colorScheme.onPrimary,
+        body: SafeArea(
+          child: Container(
+            width: double.maxFinite,
+            decoration: AppDecoration.semanticWhite,
+            child: Column(
+              children: [
+                _buildProfileStack(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      width: double.maxFinite,
+                      padding: EdgeInsets.symmetric(horizontal: 24.h),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 74.h),
+                          SizedBox(
+                            width: double.maxFinite,
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "lbl53".tr,
+                                    style:
+                                        CustomTextStyles.bodySmallGray9000511,
                                   ),
-                                  Text(
-                                    "lbl65".tr,
-                                    style: CustomTextStyles
-                                        .bodyMediumBluegray30001_1,
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
+                                ),
+                                SizedBox(height: 4.h),
+                                _buildSettingsColumn(context),
+                                SizedBox(height: 22.h),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "lbl60".tr,
+                                    style:
+                                        CustomTextStyles.bodySmallGray9000511,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                _buildInfoColumn(context),
+                                SizedBox(height: 12.h),
+                                _buildLogoutButton(context),
+                                SizedBox(height: 12.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "lbl64".tr,
+                                      style: CustomTextStyles
+                                          .bodyMediumBluegray30001_1,
+                                    ),
+                                    Text(
+                                      "lbl65".tr,
+                                      style: CustomTextStyles
+                                          .bodyMediumBluegray30001_1,
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -178,9 +177,12 @@ class TwentyonePage extends StatelessWidget {
                   TwentyoneOneItemModel model =
                       twentyoneModelObj?.twentyoneOneItemList[index] ??
                           TwentyoneOneItemModel();
-                  return TwentyoneOneItemWidget(
-                    model,
-                  );
+                  if (index == 2) {
+                    model = model.copyWith(onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.seventeenPage);
+                    });
+                  }
+                  return TwentyoneOneItemWidget(model);
                 },
               );
             },

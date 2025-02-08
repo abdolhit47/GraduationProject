@@ -31,7 +31,10 @@ class TwentyoneBloc extends Bloc<TwentyoneEvent, TwentyoneState> {
           tf: "lbl54".tr, iconuserOne: ImageConstant.imgIconUser),
       TwentyoneOneItemModel(
           tf: "msg20".tr, iconuserOne: ImageConstant.imgHeroiconsSolidKey),
-      TwentyoneOneItemModel(tf: "lbl55".tr, iconuserOne: ImageConstant.imgFile),
+      TwentyoneOneItemModel(
+        tf: "lbl55".tr,
+        iconuserOne: ImageConstant.imgFile,
+      ),
       TwentyoneOneItemModel(),
       TwentyoneOneItemModel()
     ];
