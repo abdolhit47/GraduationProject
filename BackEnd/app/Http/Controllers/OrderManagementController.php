@@ -87,7 +87,7 @@ class OrderManagementController extends Controller {
         $orders = $orders->map(function ($order){
             return[
                 'value' => $order->id,
-                'lable' => $order->order_number,
+                'label' => $order->order_number,
             ];
         });
         return response()->json($orders,200);
@@ -108,19 +108,19 @@ class OrderManagementController extends Controller {
         return response()->json($order,200);
     }
     public function viewOrders() {
-        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['pending', 'purchased', 'shipping', 'delivering'])->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderTR(){
-        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','2')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['pending', 'purchased', 'shipping', 'delivering'])->where('commission_id','2')->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderUEA(){
-        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','3')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['pending', 'purchased', 'shipping', 'delivering'])->where('commission_id','3')->get();
         return response()->json($this->orderview($orders));
     }
     public function viewOrderCH(){
-        $orders = Order::with('customer','commission')->whereIn('status',['delivered', 'cancelled'])->where('commission_id','1')->get();
+        $orders = Order::with('customer','commission')->whereIn('status',['pending', 'purchased', 'shipping', 'delivering'])->where('commission_id','1')->get();
         return response()->json($this->orderview($orders));
     }
      function orderview($orders){

@@ -79,7 +79,7 @@ class TaskManagementController extends Controller {
     public function completeTask() {
         if(Auth::user()->role == 'manager' || Auth::user()->role == 'general_manager') {
             $tasks = Task::select('id', 'task_name', 'task_details', 'start_date', 'end_date','duration_in_days', 'task_status', 'employee_id')
-                ->where('task_status', 'pending')->get();
+                ->where('task_status', 'completed')->get();
         }else {
             $tasks = Task::with('employee')->select('id', 'task_name', 'task_details', 'start_date', 'end_date', 'task_status', 'employee_id')
                 ->where('employee_id', Auth::user()->id)
