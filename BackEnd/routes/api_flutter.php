@@ -31,25 +31,6 @@ Route::group(['prefix' => 'mobile'], function () {
         Route::get('/earnings', [CommissionsManagementController::class, 'viewCommissions'])->middleware('auth:api');
     });
 
-    // Task Management
-    Route::group(['prefix' => 'tasks'], function () {
-        Route::get('/', [TaskManagementController::class, 'index'])->middleware('auth:api');
-        Route::post('/add', [TaskManagementController::class, 'addTask'])->middleware('auth:api');
-        Route::put('/update-status/{taskId}', [TaskManagementController::class, 'updateTaskStatus'])->middleware('auth:api');
-        Route::delete('/delete/{taskId}', [TaskManagementController::class, 'deleteTask'])->middleware('auth:api');
-    });
-
-    // Expenses
-    Route::group(['prefix' => 'expenses'], function () {
-        Route::get('/', [ExpenseManagementController::class, 'viewExpenses'])->middleware('auth:api');
-        Route::post('/add', [ExpenseManagementController::class, 'addExpense'])->middleware('auth:api');
-        Route::patch('/edit/{expenseId}', [ExpenseManagementController::class, 'editExpense'])->middleware('auth:api');
-    });
-
-    // Reports
-    Route::group(['prefix' => 'reports'], function () {
-        Route::get('/{year}', [ReportsController::class, 'generateRevenueReport'])->middleware('auth:api');
-        Route::get('/earnings/{year?}/{month?}', [ReportsController::class, 'Earnings'])->middleware('auth:api');
-    });
+    
 
 });
