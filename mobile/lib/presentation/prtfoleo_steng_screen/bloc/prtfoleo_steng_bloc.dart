@@ -19,7 +19,9 @@ class PrtfoleoStengBloc extends Bloc<PrtfoleoStengEvent, PrtfoleoStengState> {
   ) async {
     emit(
       state.copyWith(
-        nameInputController: TextEditingController(),
+        firstNameInputController: TextEditingController(),
+        lastNameInputController: TextEditingController(),
+        userNameInputController: TextEditingController(),
         phoneInputController: TextEditingController(),
         emailInputController: TextEditingController(),
         birthdateInputController: TextEditingController(),

@@ -177,22 +177,17 @@ class PrtfoleoStengScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildNameInput(BuildContext context) {
-    return BlocSelector<PrtfoleoStengBloc, PrtfoleoStengState,
-        TextEditingController?>(
-      selector: (state) => state.nameInputController,
-      builder: (context, nameInputController) {
-        return CustomTextFormField(
-          controller: nameInputController,
-          hintText: "lbl34".tr,
-          hintStyle: CustomTextStyles.titleSmallCairoErrorContainer,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.h,
-            vertical: 10.h,
-          ),
-          borderDecoration: TextFormFieldStyleHelper.outlineErrorContainer,
-        );
-      },
+  Widget _buildNameInput(
+      BuildContext context, TextEditingController? controller) {
+    return CustomTextFormField(
+      controller: controller,
+      hintText: "lbl34".tr,
+      hintStyle: CustomTextStyles.titleSmallCairoErrorContainer,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 20.h,
+        vertical: 10.h,
+      ),
+      borderDecoration: TextFormFieldStyleHelper.outlineErrorContainer,
     );
   }
 
@@ -210,7 +205,12 @@ class PrtfoleoStengScreen extends StatelessWidget {
               style: CustomTextStyles.titleSmallCairoGray40003,
             ),
           ),
-          _buildNameInput(context)
+          _buildNameInput(
+            context,
+            BlocProvider.of<PrtfoleoStengBloc>(context)
+                .state
+                .firstNameInputController,
+          ),
         ],
       ),
     );
@@ -230,7 +230,12 @@ class PrtfoleoStengScreen extends StatelessWidget {
               style: CustomTextStyles.titleSmallCairoGray40003,
             ),
           ),
-          _buildNameInput(context)
+          _buildNameInput(
+            context,
+            BlocProvider.of<PrtfoleoStengBloc>(context)
+                .state
+                .lastNameInputController,
+          ),
         ],
       ),
     );
@@ -250,7 +255,12 @@ class PrtfoleoStengScreen extends StatelessWidget {
               style: CustomTextStyles.titleSmallCairoGray40003,
             ),
           ),
-          _buildNameInput(context)
+          _buildNameInput(
+            context,
+            BlocProvider.of<PrtfoleoStengBloc>(context)
+                .state
+                .userNameInputController,
+          ),
         ],
       ),
     );

@@ -139,20 +139,15 @@ class TwentyfiveScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildUsernameInputField(BuildContext context) {
-    return BlocSelector<TwentyfiveBloc, TwentyfiveState,
-        TextEditingController?>(
-      selector: (state) => state.usernameInputFieldController,
-      builder: (context, usernameInputFieldController) {
-        return CustomTextFormField(
-          controller: usernameInputFieldController,
-          hintText: "lbl7".tr,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.h,
-            vertical: 10.h,
-          ),
-        );
-      },
+  Widget _buildUsernameInputField(
+      BuildContext context, TextEditingController? controller) {
+    return CustomTextFormField(
+      controller: controller,
+      hintText: "lbl7".tr,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 20.h,
+        vertical: 10.h,
+      ),
     );
   }
 
@@ -171,27 +166,27 @@ class TwentyfiveScreen extends StatelessWidget {
             "lbl10".tr,
             style: CustomTextStyles.labelLargeBluegray800,
           ),
-          _buildUsernameInputField(context)
+          _buildUsernameInputField(
+            context,
+            BlocProvider.of<TwentyfiveBloc>(context)
+                .state
+                .usernameInputFieldController,
+          )
         ],
       ),
     );
   }
 
   /// Section Widget
-  Widget _buildFullNameInputField(BuildContext context) {
-    return BlocSelector<TwentyfiveBloc, TwentyfiveState,
-        TextEditingController?>(
-      selector: (state) => state.fullNameInputFieldController,
-      builder: (context, fullNameInputFieldController) {
-        return CustomTextFormField(
-          controller: fullNameInputFieldController,
-          hintText: "lbl7".tr,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.h,
-            vertical: 10.h,
-          ),
-        );
-      },
+  Widget _buildFullNameInputField(
+      BuildContext context, TextEditingController? controller) {
+    return CustomTextFormField(
+      controller: controller,
+      hintText: "lbl7".tr,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 20.h,
+        vertical: 10.h,
+      ),
     );
   }
 
@@ -210,7 +205,12 @@ class TwentyfiveScreen extends StatelessWidget {
             "first_name".tr,
             style: CustomTextStyles.labelLargeBluegray800,
           ),
-          _buildFullNameInputField(context)
+          _buildFullNameInputField(
+            context,
+            BlocProvider.of<TwentyfiveBloc>(context)
+                .state
+                .firstNameInputFieldController,
+          )
         ],
       ),
     );
@@ -230,7 +230,12 @@ class TwentyfiveScreen extends StatelessWidget {
             "last_name".tr,
             style: CustomTextStyles.labelLargeBluegray800,
           ),
-          _buildFullNameInputField(context)
+          _buildFullNameInputField(
+            context,
+            BlocProvider.of<TwentyfiveBloc>(context)
+                .state
+                .lastNameInputFieldController,
+          )
         ],
       ),
     );

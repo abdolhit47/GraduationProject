@@ -4,17 +4,20 @@ part of 'twentyfive_bloc.dart';
 
 // ignore_for_file: must_be_immutable
 class TwentyfiveState extends Equatable {
-  TwentyfiveState(
-      {this.usernameInputFieldController,
-      this.fullNameInputFieldController,
-      this.phoneNumberInputFieldController,
-      this.emailInputFieldController,
-      this.passwordInputFieldController,
-      this.twentyfiveModelObj});
+  TwentyfiveState({
+    this.usernameInputFieldController,
+    this.firstNameInputFieldController,
+    this.lastNameInputFieldController,
+    this.phoneNumberInputFieldController,
+    this.emailInputFieldController,
+    this.passwordInputFieldController,
+    this.twentyfiveModelObj,
+  });
 
   TextEditingController? usernameInputFieldController;
 
-  TextEditingController? fullNameInputFieldController;
+  TextEditingController? firstNameInputFieldController;
+  TextEditingController? lastNameInputFieldController;
 
   TextEditingController? phoneNumberInputFieldController;
 
@@ -27,11 +30,12 @@ class TwentyfiveState extends Equatable {
   @override
   List<Object?> get props => [
         usernameInputFieldController,
-        fullNameInputFieldController,
+        lastNameInputFieldController,
         phoneNumberInputFieldController,
         emailInputFieldController,
         passwordInputFieldController,
-        twentyfiveModelObj
+        twentyfiveModelObj,
+        firstNameInputFieldController,
       ];
   TwentyfiveState copyWith({
     TextEditingController? usernameInputFieldController,
@@ -40,12 +44,13 @@ class TwentyfiveState extends Equatable {
     TextEditingController? emailInputFieldController,
     TextEditingController? passwordInputFieldController,
     TwentyfiveModel? twentyfiveModelObj,
+    TextEditingController? firstNameInputFieldController,
   }) {
     return TwentyfiveState(
       usernameInputFieldController:
           usernameInputFieldController ?? this.usernameInputFieldController,
-      fullNameInputFieldController:
-          fullNameInputFieldController ?? this.fullNameInputFieldController,
+      lastNameInputFieldController:
+          fullNameInputFieldController ?? this.lastNameInputFieldController,
       phoneNumberInputFieldController: phoneNumberInputFieldController ??
           this.phoneNumberInputFieldController,
       emailInputFieldController:
@@ -53,6 +58,8 @@ class TwentyfiveState extends Equatable {
       passwordInputFieldController:
           passwordInputFieldController ?? this.passwordInputFieldController,
       twentyfiveModelObj: twentyfiveModelObj ?? this.twentyfiveModelObj,
+      firstNameInputFieldController:
+          firstNameInputFieldController ?? this.firstNameInputFieldController,
     );
   }
 }

@@ -4,13 +4,16 @@ part of 'four_bloc.dart';
 
 // ignore_for_file: must_be_immutable
 class FourState extends Equatable {
-  FourState(
-      {this.nameInputFieldController,
-      this.emailInputFieldController,
-      this.passwordInputFieldController,
-      this.fourModelObj});
+  FourState({
+    this.firstNameInputFieldController,
+    this.lastNameInputFieldController,
+    this.emailInputFieldController,
+    this.passwordInputFieldController,
+    this.fourModelObj,
+  });
 
-  TextEditingController? nameInputFieldController;
+  TextEditingController? firstNameInputFieldController;
+  TextEditingController? lastNameInputFieldController;
 
   TextEditingController? emailInputFieldController;
 
@@ -20,20 +23,24 @@ class FourState extends Equatable {
 
   @override
   List<Object?> get props => [
-        nameInputFieldController,
+        firstNameInputFieldController,
         emailInputFieldController,
         passwordInputFieldController,
-        fourModelObj
+        fourModelObj,
+        lastNameInputFieldController,
       ];
   FourState copyWith({
     TextEditingController? nameInputFieldController,
+    TextEditingController? lastNameInputFieldController,
     TextEditingController? emailInputFieldController,
     TextEditingController? passwordInputFieldController,
     FourModel? fourModelObj,
   }) {
     return FourState(
-      nameInputFieldController:
-          nameInputFieldController ?? this.nameInputFieldController,
+      firstNameInputFieldController:
+          nameInputFieldController ?? this.firstNameInputFieldController,
+      lastNameInputFieldController:
+          lastNameInputFieldController ?? this.lastNameInputFieldController,
       emailInputFieldController:
           emailInputFieldController ?? this.emailInputFieldController,
       passwordInputFieldController:

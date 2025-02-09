@@ -4,15 +4,20 @@ part of 'prtfoleo_steng_bloc.dart';
 
 // ignore_for_file: must_be_immutable
 class PrtfoleoStengState extends Equatable {
-  PrtfoleoStengState(
-      {this.nameInputController,
-      this.phoneInputController,
-      this.emailInputController,
-      this.birthdateInputController,
-      this.selectedDropDownValue,
-      this.prtfoleoStengModelObj});
+  PrtfoleoStengState({
+    this.firstNameInputController,
+    this.lastNameInputController,
+    this.userNameInputController,
+    this.phoneInputController,
+    this.emailInputController,
+    this.birthdateInputController,
+    this.selectedDropDownValue,
+    this.prtfoleoStengModelObj,
+  });
 
-  TextEditingController? nameInputController;
+  TextEditingController? firstNameInputController;
+  TextEditingController? lastNameInputController;
+  TextEditingController? userNameInputController;
 
   TextEditingController? phoneInputController;
 
@@ -26,7 +31,9 @@ class PrtfoleoStengState extends Equatable {
 
   @override
   List<Object?> get props => [
-        nameInputController,
+        firstNameInputController,
+        lastNameInputController,
+        userNameInputController,
         phoneInputController,
         emailInputController,
         birthdateInputController,
@@ -34,7 +41,9 @@ class PrtfoleoStengState extends Equatable {
         prtfoleoStengModelObj
       ];
   PrtfoleoStengState copyWith({
-    TextEditingController? nameInputController,
+    TextEditingController? firstNameInputController,
+    TextEditingController? lastNameInputController,
+    TextEditingController? userNameInputController,
     TextEditingController? phoneInputController,
     TextEditingController? emailInputController,
     TextEditingController? birthdateInputController,
@@ -42,7 +51,12 @@ class PrtfoleoStengState extends Equatable {
     PrtfoleoStengModel? prtfoleoStengModelObj,
   }) {
     return PrtfoleoStengState(
-      nameInputController: nameInputController ?? this.nameInputController,
+      firstNameInputController:
+          firstNameInputController ?? this.firstNameInputController,
+      lastNameInputController:
+          lastNameInputController ?? this.lastNameInputController,
+      userNameInputController:
+          userNameInputController ?? this.userNameInputController,
       phoneInputController: phoneInputController ?? this.phoneInputController,
       emailInputController: emailInputController ?? this.emailInputController,
       birthdateInputController:

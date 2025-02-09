@@ -117,7 +117,7 @@ class FourScreen extends StatelessWidget {
   /// Section Widget
   Widget _buildFirstNameInputField(BuildContext context) {
     return BlocSelector<FourBloc, FourState, TextEditingController?>(
-      selector: (state) => state.nameInputFieldController,
+      selector: (state) => state.firstNameInputFieldController,
       builder: (context, nameInputFieldController) {
         return CustomTextFormField(
           controller: nameInputFieldController,
@@ -133,11 +133,11 @@ class FourScreen extends StatelessWidget {
 
   Widget _buildLastNameInputField(BuildContext context) {
     return BlocSelector<FourBloc, FourState, TextEditingController?>(
-      selector: (state) => state.nameInputFieldController,
-      builder: (context, nameInputFieldController) {
+      selector: (state) => state.lastNameInputFieldController,
+      builder: (context, controller) {
         return CustomTextFormField(
-          controller: nameInputFieldController,
-          hintText: "lbl7".tr,
+          controller: controller,
+          hintText: "last_name".tr,
           contentPadding: EdgeInsets.symmetric(
             horizontal: 20.h,
             vertical: 10.h,
