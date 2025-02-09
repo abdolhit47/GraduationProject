@@ -34,7 +34,7 @@ class UserManagementController extends Controller {
     public function selectuser()  {
         $users = User::select('id','role')->whereIn('role',['general_manager','employee1','employee2'])->get();
         $users = $users->map(function ($user){
-            return ['value'=>$user->id,'lable'=>$user->role];
+            return ['value'=>$user->id,'label'=>$user->role];
         });
         return response()->json($users);
     }
