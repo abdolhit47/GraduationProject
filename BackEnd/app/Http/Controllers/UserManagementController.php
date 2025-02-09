@@ -379,7 +379,7 @@ class UserManagementController extends Controller {
     }
 
     public function customers(){
-        $customers = User::select('id','first_name','father_name','last_name')->where('role','customer')->get();
+        $customers = User::select('id','first_name','last_name')->where('role','customer')->get();
         $customers = $customers->map(function($customer){
             return[
                 'value'=>$customer->id,
