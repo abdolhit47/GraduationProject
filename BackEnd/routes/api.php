@@ -47,7 +47,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::put('/editOrder/{orderId}', [OrderManagementController::class, 'editOrder']);//تعديل طلب
     Route::delete('/deleteOrder/{orderId}', [OrderManagementController::class, 'deleteOrder']);//حذف طلب
     Route::put('/transferOrder/{orderId}', [OrderManagementController::class, 'transferOrder']);
-
+    Route::get('/ordercus',[OrderManagementController::class,'viewOrderCustom']);
     Route::get('/viewCommissions', [CommissionsManagementController::class, 'viewCommissions']);
     Route::patch('/editCommission/{commissionId}', [CommissionsManagementController::class, 'editCommission']);
 

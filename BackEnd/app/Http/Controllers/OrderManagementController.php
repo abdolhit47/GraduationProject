@@ -142,6 +142,48 @@ class OrderManagementController extends Controller {
         return $orders;
     }
 
+    public function viewOrderCustom() {
+        $order = Order::with('customer','commission')->where('customer_id',Auth::user()->id)->whereIn('status',['pending', 'purchased', 'shipping', 'delivering'])->get();
+        if(!$order){
+            return response()->json('not found');
+        }
+        $order = $order->map(function($order){
+            $daylift = now()->startOfDay()->diffInDays($order->created_at->addDays($order->expected_delivery_time)->startOfDay(), false);
+            if($daylift == 1){
+                $daylift = 'بعد يوم واحد';
+            }elseif($daylift == 2){
+                $daylift = 'بعد يومين';
+            }elseif ($daylift >= 3){
+                $daylift = ''.$daylift.'بعد ايام';
+            }
+            $status = $order->status;
+            if($status == 'pending'){
+                $status = 'قيد الانتظار';
+            }elseif($status == 'purchased'){
+                $status = 'تم الشراء';
+            }elseif($status == 'shipping'){
+                $status = 'جاري الشحن';
+            }elseif($status == 'delivering'){
+                $status = 'جاري التوصيل';
+            }
+            $country = $order->commission->country;
+            if($country == 'turkey'){
+                $country = 'تركيا';
+            }elseif($country == 'uae'){
+                $country = 'الامارات العربية المتحدة';
+            }elseif($country == 'china'){
+                $country = 'الصين';
+            }
+            return [
+                'order_number' => $order->order_number,
+                'shipping_cost' => (float)$order->shipping_cost,
+                'status' => $status,
+                'commission' => $country,
+                'days' =>  $daylift,
+            ];
+        });
+        return response()->json($order,200);
+    }
     public function viewbytype($type) {
         if($type == 'turkey') {
             $commission = Commission::select('id')->where('country', $type)->first();
