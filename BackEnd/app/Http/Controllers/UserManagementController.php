@@ -20,7 +20,21 @@ class UserManagementController extends Controller {
         $users = User::select('id', 'first_name', 'father_name', 'last_name', 'username', 'email', 'role', 'phone')->get();
         return response()->json($users);
     }
-
+    public function viewEmployee() {
+        $users = User::with('commusers')->select('id', 'first_name', 'father_name', 'last_name', 'username', 'phone')->get();
+        $users = $users->map(function ($user) {
+            $user = $user->commusers->map(function ($user) {
+                return [
+                    'id' => $user->user->id,
+                    'name' => $user->user->getFullNameAttribute(),
+                    'phone' => $user->user->phone,
+                    'country' => $user->commission->country,
+                ];
+            });
+            return $user;
+        });
+        return ($users);
+    }
     public function info() {
         $user = Auth::user();
         $user = [
