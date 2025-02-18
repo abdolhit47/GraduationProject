@@ -21,17 +21,31 @@ class UserManagementController extends Controller {
         return response()->json($users);
     }
     public function viewEmployee() {
-        $users = User::with('commusers')->select('id', 'first_name', 'father_name', 'last_name', 'username', 'phone')->get();
-        $users = $users->map(function ($user) {
-            $user = $user->commusers->map(function ($user) {
+        $transletCountry = [
+            'uae' => 'الإمارات العربية المتحدة',
+            'turkey' => 'تركيا',
+            'china' => 'الصين',
+        ];
+        $users = User::with('commusers','commission')->select('id', 'first_name', 'father_name', 'last_name', 'username', 'phone','role')->whereIn('role',['employee1','employee2','general_manager'])->get();
+        $users = $users->map(function ($user) use ($transletCountry){
+            $country = []; // تهيئة country كمصفوفة فارغة
+
+            if ($user->role == 'employee2') {
+                $country = ['الدعم']; // وضع "الدعم" داخل مصفوفة
+            } elseif ($user->commusers) {
+                $country_array = $user->commusers->map(function ($commuser) use ($transletCountry) {
+                    return strtr($commuser->commission->country, $transletCountry);
+                })->toArray();
+                $country = $country_array; // استخدام المصفوفة الناتجة مباشرة
+            }
                 return [
-                    'id' => $user->user->id,
-                    'name' => $user->user->getFullNameAttribute(),
-                    'phone' => $user->user->phone,
-                    'country' => $user->commission->country,
+                    'id' => $user->id,
+                    'name' => $user->getFullNameAttribute(),
+                    'username' => $user->username,
+                    'phone' => $user->phone,
+                    'role' => $user->role,
+                    'country' => $country
                 ];
-            });
-            return $user;
         });
         return ($users);
     }

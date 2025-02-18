@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CommissionsManagementController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\ExpenseManagementController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderManagementController;
 use App\Http\Controllers\RentalsManagementController;
@@ -52,6 +54,9 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/viewCommissions', [CommissionsManagementController::class, 'viewCommissions']);
     Route::patch('/editCommission/{commissionId}', [CommissionsManagementController::class, 'editCommission']);
 
+    Route::get('viewdelivery',[DeliveryController::class,'index']);
+    Route::put('updateDelivery/{deliveryId}',[DeliveryController::class,'updateDelivery']);
+
     Route::get('/viewRentals', [RentalsManagementController::class, 'viewRentals']);
     Route::post('/addRental', [RentalsManagementController::class, 'addRental']);
     Route::patch('/editRental/{rentalId}', [RentalsManagementController::class, 'editRental']);
@@ -62,6 +67,7 @@ Route::middleware(['auth:api'])->group( function () {
     Route::patch('/editExpense/{expenseId}', [ExpenseManagementController::class, 'editExpense']);//تعديل مصاريف
 
     Route::post('/salary', [ExpenseManagementController::class, 'addsalary']);//تعديل راتب
+    Route::get('/invoices', [InvoicesController::class, 'index']);
 
     Route::get('/home/{year}', [ReportsController::class, 'index']);
     Route::get('/reports/{year}', [ReportsController::class, 'generateRevenueReport']);//تقارير الايرادات
