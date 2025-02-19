@@ -53,7 +53,9 @@ class UserManagementController extends Controller {
         $user = Auth::user();
         $user = [
             'id' => $user->id,
-            'fullName' => $user->getFullNameAttribute(),
+            'first_name' => $user->first_name,
+            'father_name' => $user->father_name,
+            'last_name' => $user->last_name,
             'username' => $user->username,
             'email' => $user->email,
             'phone' => $user->phone,];

@@ -54,8 +54,10 @@ Route::middleware(['auth:api'])->group( function () {
     Route::get('/viewCommissions', [CommissionsManagementController::class, 'viewCommissions']);
     Route::patch('/editCommission/{commissionId}', [CommissionsManagementController::class, 'editCommission']);
 
-    Route::get('viewdelivery',[DeliveryController::class,'index']);
+    Route::get('viewdelivery/{type}',[DeliveryController::class,'index']);
+    Route::get('viewregister/{type}',[DeliveryController::class,'viewregister']);
     Route::put('updateDelivery/{deliveryId}',[DeliveryController::class,'updateDelivery']);
+    Route::put('updateregister/{deliveryId}',[DeliveryController::class,'updateregister']);
 
     Route::get('/viewRentals', [RentalsManagementController::class, 'viewRentals']);
     Route::post('/addRental', [RentalsManagementController::class, 'addRental']);

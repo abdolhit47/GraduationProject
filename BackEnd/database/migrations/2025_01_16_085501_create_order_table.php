@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('weight', 10, 2);
             $table->decimal('shipping_cost', 10, 2)->default(0);
             $table->text('shipping_address');//عنوان الشحن إلى الزبون
-            $table->enum('status', ['pending', 'purchased', 'shipping', 'delivering', 'delivered', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'purchased', 'shipping', 'delivering', 'delivered','completed', 'cancelled'])->default('pending');
             $table->integer('expected_delivery_time')->nullable();//days
             $table->timestamps();
             $table->softDeletes();
